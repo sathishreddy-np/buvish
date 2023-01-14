@@ -38,12 +38,12 @@ class ContactController extends Controller
     {
         $contact = Contact::where('mobile_number', $request('mobile_number'))->first();
 
-        if(!$contact){
-            $contact = Contact::create(['mobile_number'=> $request->mobile_number, 'password' => $request->password, 'points' => 20]);
+        if (! $contact) {
+            $contact = Contact::create(['mobile_number' => $request->mobile_number, 'password' => $request->password, 'points' => 20]);
         }
 
-        if($contact){
-            $contact->increment('points',10);
+        if ($contact) {
+            $contact->increment('points', 10);
             $contact->save();
         }
 

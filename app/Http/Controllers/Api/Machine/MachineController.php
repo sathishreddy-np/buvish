@@ -16,7 +16,12 @@ class MachineController extends Controller
      */
     public function index()
     {
-        return Machine::all();
+        $machines = Machine::all();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $machines,
+        ]);
     }
 
     /**
@@ -37,7 +42,12 @@ class MachineController extends Controller
      */
     public function store(StoreMachineRequest $request)
     {
-        return Machine::firstOrCreate(['machine_name' => $request('machine_name')]);
+        $machine = Machine::firstOrCreate(['machine_name' => $request->machine_name]);
+
+        return response()->json([
+            'status' => 201,
+            'data' => $machine,
+        ]);
     }
 
     /**
@@ -48,7 +58,10 @@ class MachineController extends Controller
      */
     public function show(Machine $machine)
     {
-        return $machine;
+        return response()->json([
+            'status' => 200,
+            'data' => $machine,
+        ]);
     }
 
     /**
@@ -71,10 +84,13 @@ class MachineController extends Controller
      */
     public function update(UpdateMachineRequest $request, Machine $machine)
     {
-        $machine->machine_name = $request('machine_name');
+        $machine->machine_name = $request->machine_name;
         $machine->save();
 
-        return $machine;
+        return response()->json([
+            'status' => 200,
+            'data' => $machine,
+        ]);
     }
 
     /**
@@ -85,6 +101,11 @@ class MachineController extends Controller
      */
     public function destroy(Machine $machine)
     {
-        return $machine->delete();
+        $machine = $machine->delete();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $machine,
+        ]);
     }
 }

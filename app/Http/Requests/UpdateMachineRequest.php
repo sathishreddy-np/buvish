@@ -24,7 +24,7 @@ class UpdateMachineRequest extends FormRequest
     public function rules()
     {
         return [
-            'machine_name' => 'required|max:32',
+            'machine_name' => 'required|max:32|min:3',
         ];
     }
 }

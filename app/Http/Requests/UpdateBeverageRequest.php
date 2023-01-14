@@ -24,8 +24,9 @@ class UpdateBeverageRequest extends FormRequest
     public function rules()
     {
         return [
-            'beverage_name' => 'required|max:55',
+            'beverage_name' => 'required|max:55|min:3',
             'beverage_price' => 'required',
+            'beverage_points' => 'required',
             'beverage_image_url' => 'required',
         ];
     }

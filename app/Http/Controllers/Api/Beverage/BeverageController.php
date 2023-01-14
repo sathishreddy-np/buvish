@@ -16,7 +16,12 @@ class BeverageController extends Controller
      */
     public function index()
     {
-        return Beverage::all();
+        $beverages = Beverage::all();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $beverages,
+        ]);
     }
 
     /**
@@ -37,11 +42,17 @@ class BeverageController extends Controller
      */
     public function store(StoreBeverageRequest $request)
     {
-        return Beverage::firstOrCreate([
-            'beverage_name' => $request('baverage_name'),
-            'beverage_price' => $request('beverage_price'),
-            'beverage_points' => $request('beverage_points'),
-            'beverage_image_url' => $request('beverage_image_url'),
+        // return $request->all();
+        $beverage = Beverage::firstOrCreate([
+            'beverage_name' => $request->beverage_name,
+            'beverage_price' => $request->beverage_price,
+            'beverage_points' => $request->beverage_points,
+            'beverage_image_url' => $request->beverage_image_url,
+        ]);
+
+        return response()->json([
+            'status' => 201,
+            'data' => $beverage,
         ]);
     }
 
@@ -53,7 +64,10 @@ class BeverageController extends Controller
      */
     public function show(Beverage $beverage)
     {
-        return $beverage;
+        return response()->json([
+            'status' => 200,
+            'data' => $beverage,
+        ]);
     }
 
     /**
@@ -75,13 +89,16 @@ class BeverageController extends Controller
      */
     public function update(UpdateBeverageRequest $request, Beverage $beverage)
     {
-        $beverage->beverage_name = $request('beverage_name');
-        $beverage->beverage_price = $request('beverage_price');
-        $beverage->beverage_points = $request('beverage_points');
-        $beverage->beverage_image_url = $request('beverage_image_url');
+        $beverage->beverage_name = $request->beverage_name;
+        $beverage->beverage_price = $request->beverage_price;
+        $beverage->beverage_points = $request->beverage_points;
+        $beverage->beverage_image_url = $request->beverage_image_url;
         $beverage->save();
 
-        return $beverage;
+        return response()->json([
+            'status' => 200,
+            'data' => $beverage,
+        ]);
     }
 
     /**
@@ -92,6 +109,11 @@ class BeverageController extends Controller
      */
     public function destroy(Beverage $beverage)
     {
-        return $beverage->delete();
+        $beverage = $beverage->delete();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $beverage,
+        ]);
     }
 }

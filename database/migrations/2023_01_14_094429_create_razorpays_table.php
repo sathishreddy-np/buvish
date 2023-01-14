@@ -15,6 +15,13 @@ return new class extends Migration
     {
         Schema::create('razorpays', function (Blueprint $table) {
             $table->id();
+            $table->string('qr_code_id');
+            $table->integer('machine_id');
+            $table->integer('beverage_id');
+            $table->integer('amount');
+            $table->string('qr_code_image');
+            $table->tinyInteger('status');
+            $table->longText('response');
             $table->timestamps();
         });
     }

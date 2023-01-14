@@ -26,7 +26,7 @@ class StoreContactRequest extends FormRequest
         return [
             'mobile_number' => 'required',
             'points' => 'required',
-            'password' => 'required'
+            'password' => 'required',
         ];
     }
 }

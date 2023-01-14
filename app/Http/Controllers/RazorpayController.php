@@ -17,7 +17,12 @@ class RazorpayController extends Controller
      */
     public function index()
     {
-        return Razorpay::all();
+        $payments = Razorpay::all();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $payments,
+        ]);
     }
 
     /**
@@ -39,34 +44,39 @@ class RazorpayController extends Controller
     public function store(StoreRazorpayRequest $request, RazorpayService $razorpayService)
     {
         $params = [
-            "type" => "upi_qr",
-            "name" => "Buvish",
-            "usage" => "single_use",
-            "fixed_amount" => true,
-            "payment_amount" => $request->amount, // in paise
-            "description" => $request->beverage_id,
-            "customer_id" => "cust_KprnIQzbtuO1m7",
-            "close_by" => Carbon::now()->timestamp + 120,
-            "notes" => [
-                "purpose" => $request->machine_id
-            ]
+            'type' => 'upi_qr',
+            'name' => 'Buvish',
+            'usage' => 'single_use',
+            'fixed_amount' => true,
+            'payment_amount' => $request->amount, // in paise
+            'description' => $request->beverage_id,
+            'customer_id' => 'cust_KprnIQzbtuO1m7',
+            'close_by' => Carbon::now()->timestamp + 600,
+            'notes' => [
+                'purpose' => $request->machine_id,
+            ],
         ];
 
         $response = $razorpayService->createQr($params);
 
-        return $response;
+        $params = [
+            'qr_code_id' => $response['id'],
+            'machine_id' => $request->machine_id,
+            'beverage_id' => $request->beverage_id,
+            'amount' => $response['payment_amount'],
+            'qr_code_image' => $response['image_url'],
+            'status' => 0,
+            'response' => json_encode($response),
+        ];
 
-        Razorpay::create([
-            'qr_code_id' => "",
-            'machine_id' => "",
-            'beverage_id' => "",
-            'amount' => "",
-            'status' => "",
-            'qr_code_image' => "",
-            'response' => ""
+        Razorpay::create($params);
+
+        $payment = Razorpay::where('machine_id', $request->machine_id)->orderByDesc('id')->first();
+
+        return response()->json([
+            'status' => 201,
+            'data' => $payment,
         ]);
-
-        return Razorpay::where('machine_id', $request('machine_id'))->orderByDesc('id')->first();
     }
 
     /**
@@ -100,16 +110,26 @@ class RazorpayController extends Controller
      */
     public function update(UpdateRazorpayRequest $request, Razorpay $razorpay, RazorpayService $razorpayService)
     {
-        $razorpay = Razorpay::where('qr_code_id', $request('qr_code_id'))->orderByDesc('id')->first();
+        $razorpay = Razorpay::where('id', $razorpay->id)->orderByDesc('id')->first();
+
         $params = ['qr_code_id' => $razorpay->qr_code_id];
         $response = $razorpayService->fetchQr($params);
 
-        if ($response > 0) {
-            Razorpay::where('qr_code_id', $request('qr_code_id'))
+        if ($response['payments_count_received'] > 0) {
+            Razorpay::where('qr_code_id', $razorpay->qr_code_id)
                 ->orderByDesc('id')
-                ->update(['status' => 'success']);
-            return 'success';
+                ->update(['status' => 1]);
+
+            return response()->json([
+                'status' => 200,
+                'data' => true,
+            ]);
         }
+
+        return response()->json([
+            'status' => 200,
+            'data' => false,
+        ]);
     }
 
     /**

@@ -24,7 +24,7 @@ class UpdateBeverageMachineRequest extends FormRequest
     public function rules()
     {
         return [
-            'beverage_ids' => 'required'
+            'beverage_ids' => 'required',
         ];
     }
 }
