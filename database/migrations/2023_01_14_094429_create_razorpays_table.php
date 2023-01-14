@@ -13,13 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('beverages', function (Blueprint $table) {
+        Schema::create('razorpays', function (Blueprint $table) {
             $table->id();
-            $table->string('beverage_name');
-            $table->integer('beverage_price');
-            $table->integer('beverage_points');
-            $table->string('beverage_image_url');
-            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -31,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('beverages');
+        Schema::dropIfExists('razorpays');
     }
 };

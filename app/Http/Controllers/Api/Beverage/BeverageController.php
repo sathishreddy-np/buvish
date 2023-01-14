@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Beverage;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBeverageRequest;
 use App\Http\Requests\UpdateBeverageRequest;
 use App\Models\Beverage;
@@ -39,6 +40,7 @@ class BeverageController extends Controller
         return Beverage::firstOrCreate([
             'beverage_name' => $request('baverage_name'),
             'beverage_price' => $request('beverage_price'),
+            'beverage_points' => $request('beverage_points'),
             'beverage_image_url' => $request('beverage_image_url'),
         ]);
     }
@@ -75,6 +77,7 @@ class BeverageController extends Controller
     {
         $beverage->beverage_name = $request('beverage_name');
         $beverage->beverage_price = $request('beverage_price');
+        $beverage->beverage_points = $request('beverage_points');
         $beverage->beverage_image_url = $request('beverage_image_url');
         $beverage->save();
 
