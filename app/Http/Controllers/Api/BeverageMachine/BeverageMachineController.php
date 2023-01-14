@@ -24,7 +24,6 @@ class BeverageMachineController extends Controller
             'status' => 200,
             'data' => $machine_beverages,
         ]);
-
     }
 
     /**
@@ -45,17 +44,14 @@ class BeverageMachineController extends Controller
      */
     public function store(StoreBeverageMachineRequest $request, Machine $machine)
     {
-
         $beverage_ids = explode(',', $request->beverage_ids);
 
         $machine_beverages = $machine->beverages()->sync($beverage_ids);
 
         return response()->json([
             'status' => 201,
-            'data' => true
+            'data' => true,
         ]);
-
-
     }
 
     /**

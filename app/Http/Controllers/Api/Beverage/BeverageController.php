@@ -22,7 +22,6 @@ class BeverageController extends Controller
             'status' => 200,
             'data' => $beverages,
         ]);
-
     }
 
     /**
@@ -55,7 +54,6 @@ class BeverageController extends Controller
             'status' => 201,
             'data' => $beverage,
         ]);
-
     }
 
     /**
@@ -70,7 +68,6 @@ class BeverageController extends Controller
             'status' => 200,
             'data' => $beverage,
         ]);
-
     }
 
     /**
@@ -118,6 +115,5 @@ class BeverageController extends Controller
             'status' => 200,
             'data' => $beverage,
         ]);
-
     }
 }

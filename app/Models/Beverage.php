@@ -10,7 +10,7 @@ class Beverage extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $fillable = ['beverage_name', 'beverage_price', 'beverage_points','beverage_image_url'];
+    protected $fillable = ['beverage_name', 'beverage_price', 'beverage_points', 'beverage_image_url'];
 
     public function machines()
     {
