@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\BeverageController;
-use App\Http\Controllers\BeverageMachineController;
-use App\Http\Controllers\MachineController;
+use App\Http\Controllers\Api\Beverage\BeverageController;
+use App\Http\Controllers\Api\BeverageMachine\BeverageMachineController;
+use App\Http\Controllers\Api\Machine\MachineController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

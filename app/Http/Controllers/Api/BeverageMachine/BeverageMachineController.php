@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\BeverageMachine;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBeverageMachineRequest;
 use App\Http\Requests\UpdateBeverageMachineRequest;
 use App\Models\BeverageMachine;

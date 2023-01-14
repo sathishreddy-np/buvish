@@ -1,0 +1,125 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreRazorpayRequest;
+use App\Http\Requests\UpdateRazorpayRequest;
+use App\Models\Razorpay;
+use App\Services\Razorpay\RazorpayService;
+use Carbon\Carbon;
+
+class RazorpayController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return Razorpay::all();
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StoreRazorpayRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(StoreRazorpayRequest $request, RazorpayService $razorpayService)
+    {
+        $params = [
+            "type" => "upi_qr",
+            "name" => "Buvish",
+            "usage" => "single_use",
+            "fixed_amount" => true,
+            "payment_amount" => $request->amount, // in paise
+            "description" => $request->beverage_id,
+            "customer_id" => "cust_KprnIQzbtuO1m7",
+            "close_by" => Carbon::now()->timestamp + 120,
+            "notes" => [
+                "purpose" => $request->machine_id
+            ]
+        ];
+
+        $response = $razorpayService->createQr($params);
+
+        return $response;
+
+        Razorpay::create([
+            'qr_code_id' => "",
+            'machine_id' => "",
+            'beverage_id' => "",
+            'amount' => "",
+            'status' => "",
+            'qr_code_image' => "",
+            'response' => ""
+        ]);
+
+        return Razorpay::where('machine_id', $request('machine_id'))->orderByDesc('id')->first();
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Razorpay  $razorpay
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Razorpay $razorpay)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Razorpay  $razorpay
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Razorpay $razorpay)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\UpdateRazorpayRequest  $request
+     * @param  \App\Models\Razorpay  $razorpay
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateRazorpayRequest $request, Razorpay $razorpay, RazorpayService $razorpayService)
+    {
+        $razorpay = Razorpay::where('qr_code_id', $request('qr_code_id'))->orderByDesc('id')->first();
+        $params = ['qr_code_id' => $razorpay->qr_code_id];
+        $response = $razorpayService->fetchQr($params);
+
+        if ($response > 0) {
+            Razorpay::where('qr_code_id', $request('qr_code_id'))
+                ->orderByDesc('id')
+                ->update(['status' => 'success']);
+            return 'success';
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Razorpay  $razorpay
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Razorpay $razorpay)
+    {
+        //
+    }
+}
