@@ -37,7 +37,7 @@ class BeverageMachineController extends Controller
      * @param  \App\Http\Requests\StoreBeverageMachineRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreBeverageMachineRequest $request,Machine $machine)
+    public function store(StoreBeverageMachineRequest $request, Machine $machine)
     {
     }
 
@@ -72,9 +72,9 @@ class BeverageMachineController extends Controller
      */
     public function update(UpdateBeverageMachineRequest $request, BeverageMachine $beverageMachine, Machine $machine)
     {
-        $beverage_ids = explode(',',$request->beverage_ids);
-        return $machine->beverages()->sync($beverage_ids);
+        $beverage_ids = explode(',', $request->beverage_ids);
 
+        return $machine->beverages()->sync($beverage_ids);
     }
 
     /**
@@ -85,6 +85,5 @@ class BeverageMachineController extends Controller
      */
     public function destroy(BeverageMachine $beverageMachine, Machine $machine, Request $request)
     {
-
     }
 }

@@ -39,17 +39,17 @@ class RazorpayController extends Controller
     public function store(StoreRazorpayRequest $request, RazorpayService $razorpayService)
     {
         $params = [
-            "type" => "upi_qr",
-            "name" => "Buvish",
-            "usage" => "single_use",
-            "fixed_amount" => true,
-            "payment_amount" => $request->amount, // in paise
-            "description" => $request->beverage_id,
-            "customer_id" => "cust_KprnIQzbtuO1m7",
-            "close_by" => Carbon::now()->timestamp + 120,
-            "notes" => [
-                "purpose" => $request->machine_id
-            ]
+            'type' => 'upi_qr',
+            'name' => 'Buvish',
+            'usage' => 'single_use',
+            'fixed_amount' => true,
+            'payment_amount' => $request->amount, // in paise
+            'description' => $request->beverage_id,
+            'customer_id' => 'cust_KprnIQzbtuO1m7',
+            'close_by' => Carbon::now()->timestamp + 120,
+            'notes' => [
+                'purpose' => $request->machine_id,
+            ],
         ];
 
         $response = $razorpayService->createQr($params);
@@ -57,13 +57,13 @@ class RazorpayController extends Controller
         return $response;
 
         Razorpay::create([
-            'qr_code_id' => "",
-            'machine_id' => "",
-            'beverage_id' => "",
-            'amount' => "",
-            'status' => "",
-            'qr_code_image' => "",
-            'response' => ""
+            'qr_code_id' => '',
+            'machine_id' => '',
+            'beverage_id' => '',
+            'amount' => '',
+            'status' => '',
+            'qr_code_image' => '',
+            'response' => '',
         ]);
 
         return Razorpay::where('machine_id', $request('machine_id'))->orderByDesc('id')->first();
@@ -108,6 +108,7 @@ class RazorpayController extends Controller
             Razorpay::where('qr_code_id', $request('qr_code_id'))
                 ->orderByDesc('id')
                 ->update(['status' => 'success']);
+
             return 'success';
         }
     }

@@ -213,6 +213,6 @@ return [
     ])->toArray(),
 
     'razorpay_key_id' => env('KEY_ID'),
-    'razorpay_key_secret' => env('KEY_SECRET')
+    'razorpay_key_secret' => env('KEY_SECRET'),
 
 ];
