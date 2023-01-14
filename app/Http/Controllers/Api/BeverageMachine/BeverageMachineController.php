@@ -18,7 +18,13 @@ class BeverageMachineController extends Controller
      */
     public function index(Machine $machine)
     {
-        return $machine->beverages()->get();
+        $machine_beverages = $machine->beverages()->get();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $machine_beverages,
+        ]);
+
     }
 
     /**
@@ -39,6 +45,17 @@ class BeverageMachineController extends Controller
      */
     public function store(StoreBeverageMachineRequest $request, Machine $machine)
     {
+
+        $beverage_ids = explode(',', $request->beverage_ids);
+
+        $machine_beverages = $machine->beverages()->sync($beverage_ids);
+
+        return response()->json([
+            'status' => 201,
+            'data' => true
+        ]);
+
+
     }
 
     /**
@@ -70,11 +87,8 @@ class BeverageMachineController extends Controller
      * @param  \App\Models\BeverageMachine  $beverageMachine
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateBeverageMachineRequest $request, BeverageMachine $beverageMachine, Machine $machine)
+    public function update(UpdateBeverageMachineRequest $request, BeverageMachine $beverageMachine)
     {
-        $beverage_ids = explode(',', $request->beverage_ids);
-
-        return $machine->beverages()->sync($beverage_ids);
     }
 
     /**
