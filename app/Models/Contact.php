@@ -10,5 +10,5 @@ class Contact extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $fillable = ['mobile_number', 'password'];
+    protected $fillable = ['mobile_number', 'password', 'points'];
 }

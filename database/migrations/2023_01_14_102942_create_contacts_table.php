@@ -15,9 +15,10 @@ return new class extends Migration
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
-            $table->integer('mobile_number');
-            $table->integer('points');
-            $table->integer('password');
+            $table->bigInteger('mobile_number');
+            $table->bigInteger('points');
+            $table->bigInteger('password');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

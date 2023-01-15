@@ -37,10 +37,26 @@ class ContactController extends Controller
      */
     public function store(StoreContactRequest $request)
     {
-        $contact = Contact::where('mobile_number', $request('mobile_number'))->first();
+        $contact = Contact::where('mobile_number', $request->mobile_number)->first();
 
-        if (! $contact) {
-            $contact = Contact::create(['mobile_number' => $request->mobile_number, 'password' => $request->password, 'points' => 20]);
+        if ($request->mobile_number != '' && $request->password == '') {
+            if (! $contact) {
+                return response()->json([
+                    'status' => 200,
+                    'data' => false,
+                ]);
+            }
+        }
+
+        if ($request->mobile_number != '' && $request->password != '') {
+            if (! $contact) {
+                $contact = Contact::create(['mobile_number' => $request->mobile_number, 'password' => $request->password, 'points' => 50]);
+
+                return response()->json([
+                    'status' => 201,
+                    'data' => $contact,
+                ]);
+            }
         }
 
         if ($contact) {
@@ -48,7 +64,10 @@ class ContactController extends Controller
             $contact->save();
         }
 
-        return $contact;
+        return response()->json([
+            'status' => 200,
+            'data' => $contact,
+        ]);
     }
 
     /**
