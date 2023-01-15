@@ -127,9 +127,14 @@ class RazorpayController extends Controller
                 ->orderByDesc('id')
                 ->update(['status' => 1]);
 
+            $razorpay = Razorpay::select('machine_id', 'beverage_id', 'status')
+                ->where('qr_code_id', $razorpay->qr_code_id)
+                ->orderByDesc('id')->first();
+
             return response()->json([
                 'status' => 200,
                 'data' => true,
+                'details' => $razorpay
             ]);
         }
 
