@@ -134,7 +134,7 @@ class RazorpayController extends Controller
             return response()->json([
                 'status' => 200,
                 'data' => true,
-                'details' => $razorpay
+                'details' => $razorpay,
             ]);
         }
 
