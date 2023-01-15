@@ -76,6 +76,8 @@ class RazorpayController extends Controller
             'qr_code_image' => $response['image_url'],
             'status' => 0,
             'response' => json_encode($response),
+            'straw' => $request->straw,
+            'lid' => $request->lid
         ];
 
         Razorpay::create($params);
@@ -129,13 +131,13 @@ class RazorpayController extends Controller
                 ->orderByDesc('id')
                 ->update(['status' => 1]);
 
-            $razorpay = Razorpay::select('machine_id', 'beverage_id', 'status')
+            $razorpay = Razorpay::select('machine_id', 'beverage_id', 'status','straw','lid')
                 ->where('qr_code_id', $razorpay->qr_code_id)
                 ->orderByDesc('id')->first();
 
             // return $razorpay;
 
-            return $razorpayService->storeDispenseDetails($razorpay);
+            $razorpayService->storeDispenseDetails($razorpay);
 
             return response()->json([
                 'status' => 200,

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->integer('machine_id');
             $table->integer('beverage_id');
             $table->integer('status');
+            $table->tinyInteger('straw');
+            $table->tinyInteger('lid');
             $table->timestamps();
         });
     }

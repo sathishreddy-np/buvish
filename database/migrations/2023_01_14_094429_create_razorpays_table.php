@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('qr_code_image');
             $table->tinyInteger('status');
             $table->longText('response');
+            $table->tinyInteger('straw');
+            $table->tinyInteger('lid');
             $table->timestamps();
         });
     }
