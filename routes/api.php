@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\BeverageMachine\BeverageMachineController;
 use App\Http\Controllers\Api\Contact\ContactController;
 use App\Http\Controllers\Api\Machine\MachineController;
 use App\Http\Controllers\Api\Razorpay\RazorpayController;
+use App\Http\Controllers\DispenseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,3 +31,5 @@ Route::apiResource('razorpays', RazorpayController::class)->only(['index', 'upda
 Route::apiResource('machines.beverages.razorpays', RazorpayController::class)->only('store');
 Route::apiResource('contacts', ContactController::class);
 Route::get('rewardsPayment', [RazorpayController::class, 'rewardsPayment']);
+Route::apiResource('machines.dispenses', DispenseController::class)->only(['index', 'delete']);
+Route::get('dispenseDelete', [DispenseController::class, 'dispenseDelete']);

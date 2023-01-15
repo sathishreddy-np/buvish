@@ -133,6 +133,10 @@ class RazorpayController extends Controller
                 ->where('qr_code_id', $razorpay->qr_code_id)
                 ->orderByDesc('id')->first();
 
+            // return $razorpay;
+
+            return $razorpayService->storeDispenseDetails($razorpay);
+
             return response()->json([
                 'status' => 200,
                 'data' => true,
