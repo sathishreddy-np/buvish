@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRazorpayRequest;
 use App\Http\Requests\UpdateRazorpayRequest;
 use App\Models\Beverage;
+use App\Models\Contact;
 use App\Models\Machine;
 use App\Models\Razorpay;
 use App\Services\Razorpay\RazorpayService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class RazorpayController extends Controller
 {
@@ -153,5 +155,53 @@ class RazorpayController extends Controller
     public function destroy(Razorpay $razorpay)
     {
         //
+    }
+
+    public function rewardsPayment(Request $request)
+    {
+        $contact = Contact::where('mobile_number', $request->mobile_number)->first();
+
+        if ($request->mobile_number != '' && $request->password == '') {
+            if (!$contact) {
+                return response()->json([
+                    'status' => 200,
+                    'data' => 'Not registered. Pay by using QR',
+                ]);
+            }else{
+                return response()->json([
+                    'status' => 200,
+                    'data' => 'Candidate Registered',
+                ]);
+            }
+        }
+
+        if ($request->mobile_number != '' && $request->password != '') {
+            if ($contact) {
+                if ($contact->points >= 70) {
+                    $contact->decrement('points', 70);
+                    $contact->save();
+
+                    return response()->json([
+                        'status' => 200,
+                        'data' => true,
+                        'details' => $contact
+                    ]);
+                } else {
+
+                    return response()->json([
+                        'status' => 200,
+                        'data' => 'You dont have sufficient points. Minimum 70 points required.',
+                    ]);
+                }
+            }else{
+
+                return response()->json([
+                    'status' => 200,
+                    'data' => 'Not registered. Pay by using QR',
+                ]);
+
+
+            }
+        }
     }
 }
