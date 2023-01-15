@@ -9,5 +9,5 @@ class Dispense extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['machine_id', 'beverage_id', 'status','straw','lid'];
+    protected $fillable = ['machine_id', 'beverage_id', 'status', 'straw', 'lid'];
 }

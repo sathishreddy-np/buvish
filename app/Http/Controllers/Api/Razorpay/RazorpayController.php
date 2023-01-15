@@ -77,7 +77,7 @@ class RazorpayController extends Controller
             'status' => 0,
             'response' => json_encode($response),
             'straw' => $request->straw,
-            'lid' => $request->lid
+            'lid' => $request->lid,
         ];
 
         Razorpay::create($params);
@@ -131,7 +131,7 @@ class RazorpayController extends Controller
                 ->orderByDesc('id')
                 ->update(['status' => 1]);
 
-            $razorpay = Razorpay::select('machine_id', 'beverage_id', 'status','straw','lid')
+            $razorpay = Razorpay::select('machine_id', 'beverage_id', 'status', 'straw', 'lid')
                 ->where('qr_code_id', $razorpay->qr_code_id)
                 ->orderByDesc('id')->first();
 
@@ -163,7 +163,7 @@ class RazorpayController extends Controller
         //
     }
 
-    public function rewardsPayment(Request $request)
+    public function rewardsPayment(Request $request, RazorpayService $razorpayService)
     {
         $contact = Contact::where('mobile_number', $request->mobile_number)->first();
 
@@ -187,10 +187,20 @@ class RazorpayController extends Controller
                     $contact->decrement('points', 70);
                     $contact->save();
 
+                    $params = [
+                        'machine_id' => $request->machine_id,
+                        'beverage_id' => $request->beverage_id,
+                        'status' => $request->status,
+                        'straw' => $request->straw,
+                        'lid' => $request->lid,
+                    ];
+
+                    $dispense = $razorpayService->storeDispenseDetails($params);
+
                     return response()->json([
                         'status' => 200,
                         'data' => true,
-                        'details' => $contact,
+                        'details' => $dispense,
                     ]);
                 } else {
                     return response()->json([
