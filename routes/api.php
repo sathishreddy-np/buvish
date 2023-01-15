@@ -26,6 +26,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::apiResource('machines', MachineController::class);
 Route::apiResource('beverages', BeverageController::class);
 Route::apiResource('machines.beverages', BeverageMachineController::class);
-Route::apiResource('razorpays', RazorpayController::class)->only(['index','update']);
+Route::apiResource('razorpays', RazorpayController::class)->only(['index', 'update']);
 Route::apiResource('machines.beverages.razorpays', RazorpayController::class)->only('store');
 Route::apiResource('contacts', ContactController::class);
