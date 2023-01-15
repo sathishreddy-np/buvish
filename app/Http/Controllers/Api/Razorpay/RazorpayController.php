@@ -51,7 +51,7 @@ class RazorpayController extends Controller
             'name' => 'Buvish',
             'usage' => 'single_use',
             'fixed_amount' => true,
-            'payment_amount' => ($beverage->beverage_price)*100, // in paise
+            'payment_amount' => ($beverage->beverage_price) * 100, // in paise
             'description' => $beverage->id,
             'customer_id' => 'cust_KprnIQzbtuO1m7',
             'close_by' => Carbon::now()->timestamp + 600,
