@@ -162,12 +162,12 @@ class RazorpayController extends Controller
         $contact = Contact::where('mobile_number', $request->mobile_number)->first();
 
         if ($request->mobile_number != '' && $request->password == '') {
-            if (!$contact) {
+            if (! $contact) {
                 return response()->json([
                     'status' => 200,
                     'data' => 'Not registered. Pay by using QR',
                 ]);
-            }else{
+            } else {
                 return response()->json([
                     'status' => 200,
                     'data' => 'Candidate Registered',
@@ -184,23 +184,19 @@ class RazorpayController extends Controller
                     return response()->json([
                         'status' => 200,
                         'data' => true,
-                        'details' => $contact
+                        'details' => $contact,
                     ]);
                 } else {
-
                     return response()->json([
                         'status' => 200,
                         'data' => 'You dont have sufficient points. Minimum 70 points required.',
                     ]);
                 }
-            }else{
-
+            } else {
                 return response()->json([
                     'status' => 200,
                     'data' => 'Not registered. Pay by using QR',
                 ]);
-
-
             }
         }
     }

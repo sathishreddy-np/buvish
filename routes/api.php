@@ -29,5 +29,4 @@ Route::apiResource('machines.beverages', BeverageMachineController::class);
 Route::apiResource('razorpays', RazorpayController::class)->only(['index', 'update']);
 Route::apiResource('machines.beverages.razorpays', RazorpayController::class)->only('store');
 Route::apiResource('contacts', ContactController::class);
-Route::get('rewardsPayment', [RazorpayController::class,'rewardsPayment']);
-
+Route::get('rewardsPayment', [RazorpayController::class, 'rewardsPayment']);
