@@ -2,8 +2,9 @@
 
 use App\Http\Controllers\Api\Beverage\BeverageController;
 use App\Http\Controllers\Api\BeverageMachine\BeverageMachineController;
+use App\Http\Controllers\Api\Contact\ContactController;
 use App\Http\Controllers\Api\Machine\MachineController;
-use App\Http\Controllers\RazorpayController;
+use App\Http\Controllers\Api\Razorpay\RazorpayController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,3 +27,4 @@ Route::apiResource('machines', MachineController::class);
 Route::apiResource('beverages', BeverageController::class);
 Route::apiResource('machines.beverages', BeverageMachineController::class);
 Route::apiResource('razorpays', RazorpayController::class);
+Route::apiResource('contacts', ContactController::class);

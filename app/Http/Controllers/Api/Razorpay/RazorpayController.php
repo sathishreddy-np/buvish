@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Razorpay;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRazorpayRequest;
 use App\Http\Requests\UpdateRazorpayRequest;
 use App\Models\Razorpay;
