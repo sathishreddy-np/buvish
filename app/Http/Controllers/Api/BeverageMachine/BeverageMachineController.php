@@ -46,7 +46,7 @@ class BeverageMachineController extends Controller
     {
         $beverage_ids = explode(',', $request->beverage_ids);
 
-        $machine_beverages = $machine->beverages()->sync($beverage_ids);
+        $machine->beverages()->sync($beverage_ids);
 
         return response()->json([
             'status' => 201,

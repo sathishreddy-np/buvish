@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\Razorpay;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRazorpayRequest;
 use App\Http\Requests\UpdateRazorpayRequest;
+use App\Models\Beverage;
+use App\Models\Machine;
 use App\Models\Razorpay;
 use App\Services\Razorpay\RazorpayService;
 use Carbon\Carbon;
@@ -42,28 +44,32 @@ class RazorpayController extends Controller
      * @param  \App\Http\Requests\StoreRazorpayRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreRazorpayRequest $request, RazorpayService $razorpayService)
+    public function store(StoreRazorpayRequest $request, RazorpayService $razorpayService, Machine $machine, Beverage $beverage)
     {
         $params = [
             'type' => 'upi_qr',
             'name' => 'Buvish',
             'usage' => 'single_use',
             'fixed_amount' => true,
-            'payment_amount' => $request->amount, // in paise
-            'description' => $request->beverage_id,
+            'payment_amount' => ($beverage->beverage_price)*100, // in paise
+            'description' => $beverage->id,
             'customer_id' => 'cust_KprnIQzbtuO1m7',
             'close_by' => Carbon::now()->timestamp + 600,
             'notes' => [
-                'purpose' => $request->machine_id,
+                'purpose' => $machine->id,
             ],
         ];
 
+        // return $beverage;
+
         $response = $razorpayService->createQr($params);
+
+        // return $response;
 
         $params = [
             'qr_code_id' => $response['id'],
-            'machine_id' => $request->machine_id,
-            'beverage_id' => $request->beverage_id,
+            'machine_id' => $machine->id,
+            'beverage_id' => $beverage->id,
             'amount' => $response['payment_amount'],
             'qr_code_image' => $response['image_url'],
             'status' => 0,
@@ -72,7 +78,7 @@ class RazorpayController extends Controller
 
         Razorpay::create($params);
 
-        $payment = Razorpay::where('machine_id', $request->machine_id)->orderByDesc('id')->first();
+        $payment = Razorpay::where('machine_id', $machine->id)->orderByDesc('id')->first();
 
         return response()->json([
             'status' => 201,
