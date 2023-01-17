@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Contact\ContactController;
 use App\Http\Controllers\Api\Machine\MachineController;
 use App\Http\Controllers\Api\Razorpay\RazorpayController;
 use App\Http\Controllers\DispenseController;
+use App\Http\Controllers\InspireController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::apiResource('inspires', InspireController::class);
 Route::apiResource('machines', MachineController::class);
 Route::apiResource('beverages', BeverageController::class);
 Route::apiResource('machines.beverages', BeverageMachineController::class);
