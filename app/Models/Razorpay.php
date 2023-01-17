@@ -9,5 +9,9 @@ class Razorpay extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['qr_code_id', 'machine_id', 'beverage_id', 'amount', 'qr_code_image', 'status', 'response', 'straw', 'lid'];
+    protected $fillable = [
+        'qr_code_id', 'machine_id',
+        'beverage_id', 'amount', 'qr_code_image',
+        'status', 'response', 'straw', 'lid', 'sugar', 'ice',
+    ];
 }

@@ -32,4 +32,4 @@ Route::apiResource('machines.beverages.razorpays', RazorpayController::class)->o
 Route::apiResource('contacts', ContactController::class);
 Route::get('rewardsPayment', [RazorpayController::class, 'rewardsPayment']);
 Route::apiResource('machines.dispenses', DispenseController::class)->only(['index', 'delete']);
-Route::get('dispenseDelete', [DispenseController::class, 'dispenseDelete']);
+Route::delete('dispenseDelete', [DispenseController::class, 'dispenseDelete']);

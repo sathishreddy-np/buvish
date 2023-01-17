@@ -68,6 +68,8 @@ class RazorpayController extends Controller
 
         // return $response;
 
+        $ice = $request->ice == 1 ? 1 : 0;
+
         $params = [
             'qr_code_id' => $response['id'],
             'machine_id' => $machine->id,
@@ -79,8 +81,10 @@ class RazorpayController extends Controller
             'straw' => $request->straw,
             'lid' => $request->lid,
             'sugar' => $request->sugar,
-            'ice' => $request->ice
+            'ice' => $ice,
         ];
+
+        // return ($params);
 
         Razorpay::create($params);
 
@@ -133,11 +137,9 @@ class RazorpayController extends Controller
                 ->orderByDesc('id')
                 ->update(['status' => 1]);
 
-            $razorpay = Razorpay::select('machine_id', 'beverage_id', 'status', 'straw', 'lid')
+            $razorpay = Razorpay::select('machine_id', 'beverage_id', 'status', 'straw', 'lid', 'sugar', 'ice')
                 ->where('qr_code_id', $razorpay->qr_code_id)
                 ->orderByDesc('id')->first();
-
-            // return $razorpay;
 
             $razorpayService->storeDispenseDetails($razorpay);
 
@@ -186,9 +188,6 @@ class RazorpayController extends Controller
         if ($request->mobile_number != '' && $request->password != '') {
             if ($contact) {
                 if ($contact->points >= 70) {
-                    $contact->decrement('points', 70);
-                    $contact->save();
-
                     $params = [
                         'machine_id' => $request->machine_id,
                         'beverage_id' => $request->beverage_id,
@@ -196,10 +195,13 @@ class RazorpayController extends Controller
                         'straw' => $request->straw,
                         'lid' => $request->lid,
                         'sugar' => $request->sugar,
-                        'ice' => $request->ice
+                        'ice' => $request->ice,
                     ];
 
                     $dispense = $razorpayService->storeDispenseDetails($params);
+
+                    $contact->decrement('points', 70);
+                    $contact->save();
 
                     return response()->json([
                         'status' => 200,
