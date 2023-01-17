@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Inspire;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInspireRequest;
 use App\Http\Requests\UpdateInspireRequest;
 use App\Models\Inspire;

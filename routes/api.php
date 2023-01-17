@@ -3,10 +3,10 @@
 use App\Http\Controllers\Api\Beverage\BeverageController;
 use App\Http\Controllers\Api\BeverageMachine\BeverageMachineController;
 use App\Http\Controllers\Api\Contact\ContactController;
+use App\Http\Controllers\Api\Dispense\DispenseController;
+use App\Http\Controllers\Api\Inspire\InspireController;
 use App\Http\Controllers\Api\Machine\MachineController;
 use App\Http\Controllers\Api\Razorpay\RazorpayController;
-use App\Http\Controllers\DispenseController;
-use App\Http\Controllers\InspireController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

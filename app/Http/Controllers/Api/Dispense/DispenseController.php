@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Dispense;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDispenseRequest;
 use App\Http\Requests\UpdateDispenseRequest;
 use App\Models\Dispense;
