@@ -24,7 +24,6 @@ class InspireController extends Controller
             'status' => 200,
             'data' => $quote,
         ]);
-
     }
 
     /**
