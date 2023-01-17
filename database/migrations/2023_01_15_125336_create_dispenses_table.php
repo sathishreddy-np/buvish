@@ -20,6 +20,8 @@ return new class extends Migration
             $table->integer('status');
             $table->tinyInteger('straw');
             $table->tinyInteger('lid');
+            $table->Integer('sugar');
+            $table->tinyInteger('ice');
             $table->timestamps();
         });
     }

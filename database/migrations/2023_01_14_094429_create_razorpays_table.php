@@ -24,6 +24,8 @@ return new class extends Migration
             $table->longText('response');
             $table->tinyInteger('straw');
             $table->tinyInteger('lid');
+            $table->Integer('sugar');
+            $table->tinyInteger('ice');
             $table->timestamps();
         });
     }

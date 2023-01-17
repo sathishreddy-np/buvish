@@ -78,6 +78,8 @@ class RazorpayController extends Controller
             'response' => json_encode($response),
             'straw' => $request->straw,
             'lid' => $request->lid,
+            'sugar' => $request->sugar,
+            'ice' => $request->ice
         ];
 
         Razorpay::create($params);
@@ -190,9 +192,11 @@ class RazorpayController extends Controller
                     $params = [
                         'machine_id' => $request->machine_id,
                         'beverage_id' => $request->beverage_id,
-                        'status' => $request->status,
+                        'status' => 1,
                         'straw' => $request->straw,
                         'lid' => $request->lid,
+                        'sugar' => $request->sugar,
+                        'ice' => $request->ice
                     ];
 
                     $dispense = $razorpayService->storeDispenseDetails($params);
