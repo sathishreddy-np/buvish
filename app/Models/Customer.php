@@ -7,15 +7,16 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasEvents;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $fillable = ['user_id','name', 'email'];
+    protected $fillable = ['user_id','name', 'email',];
 
-
+    # Show Only User Created Records. You Can Check By Using Role.
     protected static function booted(): void
     {
         if (auth()->check()) {
@@ -24,4 +25,11 @@ class Customer extends Model
             });
         }
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+
 }
