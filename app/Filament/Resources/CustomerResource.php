@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CustomerResource\Pages;
-use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Models\Customer;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -15,14 +14,12 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\Auth;
 
 class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
-
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     public static function getGloballySearchableAttributes(): array
     {
@@ -113,7 +110,7 @@ class CustomerResource extends Resource
                                 $data['updated_until'],
                                 fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '<=', $date),
                             );
-                    })
+                    }),
 
             ])
             ->actions([

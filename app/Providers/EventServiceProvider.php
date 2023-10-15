@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
-
-
     /**
      * The model observers for your application.
      *

@@ -6,7 +6,6 @@ use App\Models\Customer;
 
 class CustomerObserver
 {
-
     /**
      * Handle the Customer "creating" event.
      */
