@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Company::class);
-            $table->foreignIdFor(Branch::class);
+            $table->foreignIdFor(Branch::class)->nullable();
             $table->string('name');
             $table->string('email');
             $table->softDeletes();
