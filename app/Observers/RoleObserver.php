@@ -2,13 +2,13 @@
 
 namespace App\Observers;
 
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 
 class RoleObserver
 {
 
-        /**
-     * Handle the Customer "creating" event.
+    /**
+     * Handle the Role "creating" event.
      */
     public function creating(Role $role): void
     {

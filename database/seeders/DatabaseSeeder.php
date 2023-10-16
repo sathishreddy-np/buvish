@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Company;
+use Spatie\Permission\Models\Role;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -19,13 +20,16 @@ class DatabaseSeeder extends Seeder
         $user = \App\Models\User::factory()->create([
             'name' => 'Super Admin',
             'email' => 'info@buvish.com',
-            'password' => '12345678'
+            'password' => '12345678',
         ]);
 
+        $company = Company::create(['user_id' => $user->id, 'name' => 'Pool']);
 
-        $company = Company::create([ 'user_id'=> $user->id, 'name' => 'Pool']);
+        $role = Role::create(['name'=>'admin','guard_name' => 'web','company_id' => $company->id]);
 
-        $user->update(['company_id'=> $company->id]);
+        $user->update(['company_id' => $company->id]);
+
+        $user->assignRole([$role],1);
 
     }
 }

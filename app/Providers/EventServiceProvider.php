@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Customer;
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 use App\Observers\CustomerObserver;
 use App\Observers\RoleObserver;
 use Illuminate\Auth\Events\Registered;
