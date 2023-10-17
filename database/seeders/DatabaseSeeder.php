@@ -25,12 +25,13 @@ class DatabaseSeeder extends Seeder
 
         $company = Company::create(['user_id' => $user->id, 'name' => 'Pool']);
 
-        $role = Role::create(['name'=>'admin','guard_name' => 'web','company_id' => $company->id]);
+        $role = Role::create(['name' => 'admin', 'guard_name' => 'web', 'company_id' => $company->id]);
 
         $user->update(['company_id' => $company->id]);
+
+        # below setPermissionsTeamId() is very crucial for getting and attaching team roles.
         setPermissionsTeamId(1);
 
         $user->assignRole($role);
-
     }
 }
