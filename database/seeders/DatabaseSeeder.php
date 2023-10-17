@@ -28,8 +28,9 @@ class DatabaseSeeder extends Seeder
         $role = Role::create(['name'=>'admin','guard_name' => 'web','company_id' => $company->id]);
 
         $user->update(['company_id' => $company->id]);
+        setPermissionsTeamId(1);
 
-        $user->assignRole([$role],1);
+        $user->assignRole($role);
 
     }
 }
