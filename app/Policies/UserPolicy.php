@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
@@ -12,8 +11,6 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        // setPermissionsTeamId(1);
-        dd($user->hasRole('admin'));
         return $user->hasRole('admin');
     }
 

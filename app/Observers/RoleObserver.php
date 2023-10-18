@@ -6,7 +6,6 @@ use Spatie\Permission\Models\Role;
 
 class RoleObserver
 {
-
     /**
      * Handle the Role "creating" event.
      */
@@ -17,7 +16,6 @@ class RoleObserver
             $role->guard_name = 'web';
         }
     }
-
 
     /**
      * Handle the Role "created" event.

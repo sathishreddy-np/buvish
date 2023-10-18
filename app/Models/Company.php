@@ -10,16 +10,16 @@ class Company extends Model
 {
     use HasFactory, SoftDeletes;
 
-    # assign Admin role when creating company
+    // assign Admin role when creating company
     public static function boot()
     {
         parent::boot();
 
         self::created(function ($model) {
-           $session_team_id = getPermissionsTeamId();
-           setPermissionsTeamId($model);
-           User::find(auth()->user()->id)->assignRole('admin');
-           setPermissionsTeamId($session_team_id);
+            $session_team_id = getPermissionsTeamId();
+            setPermissionsTeamId($model);
+            User::find(auth()->user()->id)->assignRole('admin');
+            setPermissionsTeamId($session_team_id);
         });
     }
 }

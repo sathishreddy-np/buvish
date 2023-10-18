@@ -5,8 +5,8 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Company;
-use Spatie\Permission\Models\Role;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
 
         $user->update(['company_id' => $company->id]);
 
-        # below setPermissionsTeamId() is very crucial for getting and attaching team roles.
+        // below setPermissionsTeamId() is very crucial for getting and attaching team roles.
         setPermissionsTeamId($company->id);
 
         $user->assignRole($role);

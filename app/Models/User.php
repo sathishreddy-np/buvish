@@ -16,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasRoles;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -51,14 +51,17 @@ class User extends Authenticatable implements FilamentUser
         'password' => 'hashed',
     ];
 
-    # Only These Can Access Admin Panel
+    // Only These Can Access Admin Panel
     public function canAccessPanel(Panel $panel): bool
     {
+        // This is very important for Spatie Teams permission
+        setPermissionsTeamId(auth()->user()->company_id);
+
         return true;
         // return str_ends_with($this->email, '@buvish.com') && $this->hasVerifiedEmail();
     }
 
-    # Each User Can Create Have Company Only
+    // Each User Can Create Have Company Only
     public function company(): HasOne
     {
         return $this->hasOne(Company::class);

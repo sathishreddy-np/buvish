@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Company;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class CompanyPolicy
 {
@@ -29,7 +28,7 @@ class CompanyPolicy
      */
     public function create(User $user): bool
     {
-        # Checks If User Already Have A Company Record
+        // Checks If User Already Have A Company Record
         return $user->company()->count() === 0;
     }
 
@@ -38,7 +37,7 @@ class CompanyPolicy
      */
     public function update(User $user, Company $company): bool
     {
-       return true;
+        return true;
     }
 
     /**
