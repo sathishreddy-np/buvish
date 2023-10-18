@@ -16,14 +16,11 @@ class TeamsPermission
     public function handle(Request $request, Closure $next): Response
     {
         if(!empty(auth()->user())){
-            // session value set on login
-            setPermissionsTeamId(session('team_id'));
+            setPermissionsTeamId(auth()->user()->company_id);
         }
-        // other custom ways to get team_id . After commenting below code then uncomment in middeware
-        /*if(!empty(auth('api')->user())){
-            // `getTeamIdFromToken()` example of custom method for getting the set team_id
-            setPermissionsTeamId(auth('api')->user()->getTeamIdFromToken());
-        }*/
+        // if(!empty(auth('api')->user())){
+        //     setPermissionsTeamId(auth('api')->user()->getTeamIdFromToken());
+        // }
 
         return $next($request);
     }

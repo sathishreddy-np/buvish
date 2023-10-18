@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
         $user->update(['company_id' => $company->id]);
 
         # below setPermissionsTeamId() is very crucial for getting and attaching team roles.
-        setPermissionsTeamId(1);
+        setPermissionsTeamId($company->id);
 
         $user->assignRole($role);
     }
