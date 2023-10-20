@@ -58,7 +58,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('is_verified')
+                Tables\Columns\IconColumn::make('is_verified')
                     ->sortable()
                     ->icon(fn (string $state): string => match ($state) {
                         '0' => 'heroicon-o-x-circle',
