@@ -1,7 +1,6 @@
 <?php
 
-use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Controllers\EmailVerificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,10 +17,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('email/verify', function (Request $request) {
-    $user = User::where('id',$request->id)->first();
-    if($user){
-        $user->markEmailAsVerified();
-    }
-    return redirect()->back();
-})->name('verification.verify');
+Route::get('email/verify', [EmailVerificationController::class, 'emailVerification'])->name('verification.verify');

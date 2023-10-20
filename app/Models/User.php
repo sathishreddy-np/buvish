@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Notifications\Notification;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -54,17 +55,23 @@ class User extends Authenticatable implements FilamentUser
     // Only These Can Access Admin Panel
     public function canAccessPanel(Panel $panel): bool
     {
-        # This is very important for Spatie Teams permission
+        // This is very important for Spatie Teams permission
         setPermissionsTeamId(auth()->user()->company_id);
 
-        // return true;
-        if(!$this->hasVerifiedEmail()){
+        // If email not verified then this will send email
+        if (! $this->hasVerifiedEmail()) {
+
             $this->sendEmailVerificationNotification();
+
+            Notification::make()
+                ->title('Email sent. Please verify the email with in 60 minutes.')
+                ->success()
+                ->send();
+
             return false;
-        }else{
-            return true;
         }
-        // return str_ends_with($this->email, '@buvish.com') && $this->hasVerifiedEmail();
+
+        return $this->hasVerifiedEmail();
     }
 
     // Each User Can Create Have Company Only
