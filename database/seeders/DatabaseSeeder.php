@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Super Admin',
             'email' => 'info@buvish.com',
             'password' => '12345678',
+            'is_verified' => 1
         ]);
 
         $company = Company::create(['user_id' => $user->id, 'name' => 'Pool']);
