@@ -4,14 +4,15 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
-use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -21,6 +22,10 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-circle';
+
+    protected static ?string $navigationGroup = 'User Management';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -64,7 +69,7 @@ class UserResource extends Resource
                     })
                     ->color(fn (string $state): string => match ($state) {
                         '0' => 'danger',
-                        '1' => 'info',
+                        '1' => 'success',
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('email_verified_at')
@@ -87,6 +92,10 @@ class UserResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
+                TernaryFilter::make('email_verified_at')
+                    ->label('User verified')
+                    ->placeholder('Select status')
+                    ->nullable(),
                 Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from'),
@@ -121,18 +130,14 @@ class UserResource extends Resource
                     }),
 
             ], layout: FiltersLayout::AboveContentCollapsible)
-            // ->filtersTriggerAction(
-            //     fn (Action $action) => $action
-            //         ->button()
-            //         ->label('Filter'),
-            // )
             ->actions([
-                Tables\Actions\ViewAction::make()
-                    ->iconButton(),
-                Tables\Actions\EditAction::make()
-                    ->iconButton(),
-                Tables\Actions\DeleteAction::make()
-                    ->iconButton(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
+                    ->icon('heroicon-m-ellipsis-horizontal')
+                    ->tooltip('Actions'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

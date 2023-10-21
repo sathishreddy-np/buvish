@@ -7,8 +7,7 @@ use Filament\Notifications\Notification;
 
 class UserObserver
 {
-
-        /**
+    /**
      * Handle the User "created" event.
      */
     public function creating(User $user): void
@@ -16,9 +15,9 @@ class UserObserver
         $user->sendEmailVerificationNotification();
 
         Notification::make()
-        ->title("Email invite sent. Ask $user->name to verify their email to log in.")
-        ->success()
-        ->send();
+            ->title("Email invite sent. Ask $user->name to verify their email to log in.")
+            ->success()
+            ->send();
 
     }
 
@@ -27,14 +26,7 @@ class UserObserver
      */
     public function created(User $user): void
     {
-
-        // $user->sendEmailVerificationNotification();
-
-        // Notification::make()
-        // ->title('Email invite sent. Please verify your email to log in.')
-        // ->success()
-        // ->send();
-
+        //
     }
 
     /**

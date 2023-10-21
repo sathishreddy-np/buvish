@@ -3,7 +3,6 @@
 namespace App\Observers;
 
 use App\Models\Customer;
-use Filament\Notifications\Notification;
 
 class CustomerObserver
 {

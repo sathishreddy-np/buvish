@@ -26,6 +26,7 @@ class EmailVerificationController extends Controller
         }
 
         $user->markEmailAsVerified();
+
         return $this->handleEmailVerified();
     }
 
@@ -42,27 +43,30 @@ class EmailVerificationController extends Controller
     private function handleEmailExpired()
     {
         Notification::make()
-        ->title('Email has expired. Please try to login to get the verification email.')
-        ->danger()
-        ->send();
+            ->title('Email has expired. Please try to login to get the verification email.')
+            ->danger()
+            ->send();
+
         return redirect('/admin/login');
     }
 
     private function handleInvalidCredentials()
     {
         Notification::make()
-        ->title('Invalid credentials.')
-        ->danger()
-        ->send();
+            ->title('Invalid credentials.')
+            ->danger()
+            ->send();
+
         return redirect('/admin/login');
     }
 
     private function handleEmailVerified()
     {
         Notification::make()
-        ->title('Email verified successfully. Please login.')
-        ->success()
-        ->send();
+            ->title('Email verified successfully. Please login.')
+            ->success()
+            ->send();
+
         return redirect('/admin/login');
     }
 }
