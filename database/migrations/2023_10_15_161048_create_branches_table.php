@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Company::class);
-            $table->foreignIdFor(Branch::class);
             $table->string('name', 55)->unique();
             $table->softDeletes();
             $table->timestamps();

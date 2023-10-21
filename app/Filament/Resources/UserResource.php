@@ -15,6 +15,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
@@ -60,6 +61,17 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->badge()
+                    ->sortable()
+                    ->searchable()
+                    ->getStateUsing(function (Model $record) {
+                        $roles = $record->roles->toArray();
+                        $role_names = array_map(function ($role) {
+                            return $role['name'];
+                        }, $roles);
+                        return $role_names;
+                    }),
                 Tables\Columns\IconColumn::make('is_verified')
                     ->sortable()
                     ->icon(fn (string $state): string => match ($state) {
