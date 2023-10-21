@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Customer;
+use Filament\Notifications\Notification;
 
 class CustomerObserver
 {
@@ -23,7 +24,6 @@ class CustomerObserver
      */
     public function created(Customer $customer): void
     {
-        //
     }
 
     /**
