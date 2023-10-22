@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\RoleResource\Pages;
+use App\Filament\Resources\RoleResource\RelationManagers\PermissionsRelationManager;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -32,10 +33,11 @@ class RoleResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                // Forms\Components\TextInput::make('guard_name')
-                //     ->required()
-                //     ->maxLength(255)
-                //     ->default('web'),
+                Forms\Components\Select::make('guard_name')
+                    ->multiple()
+                    ->relationship('permissions','name')
+                    ->required()
+
             ]);
     }
 
@@ -81,7 +83,7 @@ class RoleResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PermissionsRelationManager::class,
         ];
     }
 
