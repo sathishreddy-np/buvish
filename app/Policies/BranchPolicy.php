@@ -2,10 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Company;
+use App\Models\Branch;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
-class CompanyPolicy
+class BranchPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -18,7 +19,7 @@ class CompanyPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Company $company): bool
+    public function view(User $user, Branch $branch): bool
     {
         return true;
     }
@@ -28,14 +29,13 @@ class CompanyPolicy
      */
     public function create(User $user): bool
     {
-        // Checks If User Already Have A Company Record
-        return $user->company()->count() === 0;
+        return true;
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Company $company): bool
+    public function update(User $user, Branch $branch): bool
     {
         return true;
     }
@@ -43,7 +43,7 @@ class CompanyPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Company $company): bool
+    public function delete(User $user, Branch $branch): bool
     {
         return true;
     }
@@ -51,7 +51,7 @@ class CompanyPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Company $company): bool
+    public function restore(User $user, Branch $branch): bool
     {
         return true;
     }
@@ -59,7 +59,7 @@ class CompanyPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Company $company): bool
+    public function forceDelete(User $user, Branch $branch): bool
     {
         return true;
     }
