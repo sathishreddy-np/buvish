@@ -26,6 +26,10 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            // ->registration()
+            // ->passwordReset()
+            ->emailVerification()
+            ->profile()
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -63,6 +67,7 @@ class AdminPanelProvider extends PanelProvider
                 'success' => Color::Emerald,
                 'warning' => Color::Orange,
             ])
-            ->sidebarCollapsibleOnDesktop(true);
+            ->sidebarCollapsibleOnDesktop(true)
+            ->spa();
     }
 }

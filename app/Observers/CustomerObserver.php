@@ -6,13 +6,14 @@ use App\Models\Customer;
 
 class CustomerObserver
 {
-
     /**
      * Handle the Customer "creating" event.
      */
     public function creating(Customer $customer): void
     {
         if (auth()->check()) {
+            $customer->company_id = auth()->user()->company_id;
+            $customer->branch_id = auth()->user()->branch_id;
             $customer->user_id = auth()->user()->id;
         }
     }
@@ -22,7 +23,6 @@ class CustomerObserver
      */
     public function created(Customer $customer): void
     {
-        //
     }
 
     /**

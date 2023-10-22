@@ -3,7 +3,11 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Company;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,9 +18,36 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $user = \App\Models\User::factory()->create([
+            'name' => 'Super Admin',
+            'email' => 'info@buvish.com',
+            'password' => '12345678',
+            'is_verified' => 1,
+        ]);
+
+        $company = Company::create(['user_id' => $user->id, 'name' => 'Pool']);
+
+        $role = Role::create(['name' => 'admin', 'guard_name' => 'web']);
+
+        $user->update(['company_id' => $company->id]);
+
+        // below setPermissionsTeamId() is very crucial for getting and attaching team roles.
+        // setPermissionsTeamId($company->id);
+
+        $user->assignRole($role);
+
+        $permission_models = ['Companies', 'Branches','Customers','Users', 'Roles', 'Permissions'];
+        $permissions = ['viewAny', 'view', 'create', 'update', 'delete', 'restore', 'forceDelete'];
+
+        foreach ($permission_models as $permission_model) {
+            foreach ($permissions as $permission) {
+                Permission::create(
+                    [
+                        'name' => "$permission_model :: $permission",
+                        "guard_name" => "web"
+                    ]
+                );
+            }
+        }
     }
 }

@@ -5,15 +5,21 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Notifications\Notification;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +27,8 @@ class User extends Authenticatable implements FilamentUser
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id',
+        'branch_id',
         'name',
         'email',
         'password',
@@ -46,8 +54,37 @@ class User extends Authenticatable implements FilamentUser
         'password' => 'hashed',
     ];
 
+    // Only These Can Access Admin Panel
     public function canAccessPanel(Panel $panel): bool
     {
-        return str_ends_with($this->email, '@buvish.com') && $this->hasVerifiedEmail();
+        // This is very important for Spatie Teams permission
+        // setPermissionsTeamId(auth()->user()->company_id);
+
+        // If email not verified then this will send email
+        if (! $this->hasVerifiedEmail()) {
+
+            $this->sendEmailVerificationNotification();
+
+            Notification::make()
+                ->title('Email sent. Please verify the email with in 60 minutes.')
+                ->success()
+                ->send();
+
+            return false;
+        }
+
+        return $this->hasVerifiedEmail();
     }
+
+    // Each User Can Create Have Company Only
+    public function company(): HasOne
+    {
+        return $this->hasOne(Company::class);
+    }
+
+    // public function roles(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Role::class,'model_has_roles','model_id','role_id');
+    // }
+
 }
