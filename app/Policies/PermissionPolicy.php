@@ -13,7 +13,7 @@ class PermissionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('Admin');
+        return $user->hasPermissionTo('Permissions :: viewAny');
     }
 
     /**
@@ -21,7 +21,7 @@ class PermissionPolicy
      */
     public function view(User $user, Permission $permission): bool
     {
-        return true;
+        return $user->hasPermissionTo('Permissions :: view');
     }
 
     /**
@@ -29,7 +29,7 @@ class PermissionPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->hasPermissionTo('Permissions :: create');
     }
 
     /**
@@ -37,7 +37,7 @@ class PermissionPolicy
      */
     public function update(User $user, Permission $permission): bool
     {
-        return true;
+        return $user->hasPermissionTo('Permissions :: update');
     }
 
     /**
@@ -45,7 +45,7 @@ class PermissionPolicy
      */
     public function delete(User $user, Permission $permission): bool
     {
-        return true;
+        return $user->hasPermissionTo('Permissions :: delete');
     }
 
     /**
@@ -53,7 +53,7 @@ class PermissionPolicy
      */
     public function restore(User $user, Permission $permission): bool
     {
-        return true;
+        return $user->hasPermissionTo('Permissions :: restore');
     }
 
     /**
@@ -61,6 +61,6 @@ class PermissionPolicy
      */
     public function forceDelete(User $user, Permission $permission): bool
     {
-        return true;
+        return $user->hasPermissionTo('Permissions :: forceDelete');
     }
 }
