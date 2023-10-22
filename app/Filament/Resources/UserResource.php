@@ -45,11 +45,13 @@ class UserResource extends Resource
                     ->password()
                     ->required()
                     ->maxLength(255)
-                    ->confirmed(),
+                    ->confirmed()
+                    ->hiddenOn('view'),
                 Forms\Components\TextInput::make('password_confirmation')
                     ->password()
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->hiddenOn('view'),
             ]);
     }
 

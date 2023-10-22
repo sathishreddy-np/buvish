@@ -38,6 +38,7 @@ class RoleResource extends Resource
                     ->multiple()
                     ->relationship('permissions', 'name')
                     ->required()
+                    ->hiddenOn('view')
 
             ]);
     }

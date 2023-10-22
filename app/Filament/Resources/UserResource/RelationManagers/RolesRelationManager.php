@@ -27,12 +27,12 @@ class RolesRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
-        setPermissionsTeamId(auth()->user()->company_id);
 
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('name')
+                ->searchable(),
             ])
             ->filters([
                 //
@@ -47,6 +47,7 @@ class RolesRelationManager extends RelationManager
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DetachBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->poll('10s');
     }
 }

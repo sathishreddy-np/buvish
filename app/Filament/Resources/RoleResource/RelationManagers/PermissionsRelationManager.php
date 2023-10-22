@@ -45,6 +45,7 @@ class PermissionsRelationManager extends RelationManager
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DetachBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->poll('10s');
     }
 }
