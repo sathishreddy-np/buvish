@@ -12,7 +12,6 @@ class RoleObserver
     public function creating(Role $role): void
     {
         if (auth()->check()) {
-            $role->company_id = auth()->user()->company_id;
             $role->guard_name = 'web';
         }
     }

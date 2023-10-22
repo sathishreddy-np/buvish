@@ -58,7 +58,7 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         // This is very important for Spatie Teams permission
-        setPermissionsTeamId(auth()->user()->company_id);
+        // setPermissionsTeamId(auth()->user()->company_id);
 
         // If email not verified then this will send email
         if (! $this->hasVerifiedEmail()) {

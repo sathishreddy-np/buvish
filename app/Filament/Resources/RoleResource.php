@@ -27,9 +27,6 @@ class RoleResource extends Resource
     {
         return $form
             ->schema([
-                // Forms\Components\TextInput::make('company_id')
-                //     ->numeric()
-                //     ->default(auth()->user()->company_id),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
@@ -45,9 +42,6 @@ class RoleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company_id')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('guard_name')
