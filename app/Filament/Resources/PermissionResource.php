@@ -98,6 +98,8 @@ class PermissionResource extends Resource
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
                 ])
                     ->icon('heroicon-m-ellipsis-horizontal')
                     ->tooltip('Actions'),
