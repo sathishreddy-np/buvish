@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -61,7 +62,7 @@ class User extends Authenticatable implements FilamentUser
         // setPermissionsTeamId(auth()->user()->company_id);
 
         // If email not verified then this will send email
-        if (! $this->hasVerifiedEmail()) {
+        if (!$this->hasVerifiedEmail()) {
 
             $this->sendEmailVerificationNotification();
 
@@ -82,9 +83,8 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasOne(Company::class);
     }
 
-    // public function roles(): BelongsToMany
-    // {
-    //     return $this->belongsToMany(Role::class,'model_has_roles','model_id','role_id');
-    // }
-
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'role_has_permissions', 'role_id', 'permission_id');
+    }
 }

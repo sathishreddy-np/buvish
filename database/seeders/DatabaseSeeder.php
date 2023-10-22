@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
 
         $company = Company::create(['user_id' => $user->id, 'name' => 'Pool']);
 
-        $role = Role::create(['name' => 'admin', 'guard_name' => 'web']);
+        $role = Role::create(['name' => 'Admin', 'guard_name' => 'web']);
 
         $user->update(['company_id' => $company->id]);
 

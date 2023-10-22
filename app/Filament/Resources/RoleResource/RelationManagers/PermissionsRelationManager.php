@@ -39,7 +39,6 @@ class PermissionsRelationManager extends RelationManager
                 Tables\Actions\AttachAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\DetachAction::make(),
             ])
             ->bulkActions([
