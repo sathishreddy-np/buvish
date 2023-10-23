@@ -88,6 +88,19 @@ class UserResource extends Resource
                         '1' => 'success',
                         default => 'gray',
                     }),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->sortable()
+                    ->icon(fn (string $state): string => match ($state) {
+                        '0' => 'heroicon-o-x-circle',
+                        '1' => 'heroicon-o-check-badge',
+                        default => 'heroicon-o-check-circle',
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        '0' => 'danger',
+                        '1' => 'success',
+                        default => 'gray',
+                    }),
+
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable()
@@ -108,8 +121,12 @@ class UserResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
-                TernaryFilter::make('email_verified_at')
+                TernaryFilter::make('is_verified')
                     ->label('User verified')
+                    ->placeholder('Select status')
+                    ->nullable(),
+                TernaryFilter::make('is_active')
+                    ->label('Is active')
                     ->placeholder('Select status')
                     ->nullable(),
                 Filter::make('created_at')
@@ -190,6 +207,6 @@ class UserResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ])
-            ->where('company_id',auth()->user()->company_id);
+            ->where('company_id', auth()->user()->company_id);
     }
 }
