@@ -189,6 +189,7 @@ class UserResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
-            ]);
+            ])
+            ->where('company_id',auth()->user()->company_id);
     }
 }
