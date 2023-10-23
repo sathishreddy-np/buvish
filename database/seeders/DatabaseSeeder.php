@@ -23,11 +23,12 @@ class DatabaseSeeder extends Seeder
             'email' => 'info@buvish.com',
             'password' => '12345678',
             'is_verified' => 1,
+            'is_active' => 1
         ]);
 
         $company = Company::create(['user_id' => $user->id, 'name' => 'Pool']);
 
-        $role = Role::create(['name' => 'Admin', 'guard_name' => 'web']);
+        $role = Role::create(['name' => 'Admin', 'guard_name' => 'web','company_id' => $company->id]);
 
         $user->update(['company_id' => $company->id]);
 
@@ -49,5 +50,8 @@ class DatabaseSeeder extends Seeder
                 );
             }
         }
+
+        $all_permissions = Permission::all()->pluck('name');
+        $role->syncPermissions($all_permissions);
     }
 }
