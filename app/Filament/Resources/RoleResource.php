@@ -47,6 +47,8 @@ class RoleResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('company_id')
+                ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('deleted_at')
@@ -141,6 +143,7 @@ class RoleResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
-            ]);
+            ])
+            ->where('company_id',auth()->user()->company_id);
     }
 }

@@ -47,10 +47,11 @@ class CreatePermissionTables extends Migration
             $table->string('guard_name'); // For MySQL 8.0 use string('guard_name', 125);
             $table->softDeletes();
             $table->timestamps();
+
             if ($teams || config('permission.testing')) {
                 $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);
             } else {
-                $table->unique(['name', 'guard_name']);
+                $table->unique(['company_id','name', 'guard_name']);
             }
         });
 

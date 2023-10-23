@@ -18,24 +18,38 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        $user = \App\Models\User::factory()->create([
-            'name' => 'Super Admin',
+        $admin_user_1 = \App\Models\User::factory()->create([
+            'name' => 'Admin 1',
             'email' => 'info@buvish.com',
             'password' => '12345678',
             'is_verified' => 1,
             'is_active' => 1
         ]);
 
-        $company = Company::create(['user_id' => $user->id, 'name' => 'Pool']);
+        $admin_user_2 = \App\Models\User::factory()->create([
+            'name' => 'Admin 2',
+            'email' => 'info2@buvish.com',
+            'password' => '12345678',
+            'is_verified' => 1,
+            'is_active' => 1
+        ]);
 
-        $role = Role::create(['name' => 'Admin', 'guard_name' => 'web','company_id' => $company->id]);
 
-        $user->update(['company_id' => $company->id]);
+
+        $company_1 = Company::create(['user_id' => $admin_user_1->id, 'name' => 'Pool1']);
+        $company_2 = Company::create(['user_id' => $admin_user_2->id, 'name' => 'Pool2']);
+
+        $role_1 = Role::create(['name' => 'Admin', 'guard_name' => 'web','company_id' => $company_1->id]);
+        $role_2 = Role::create(['name' => 'Admin', 'guard_name' => 'web','company_id' => $company_2->id]);
+
+        $admin_user_1->update(['company_id' => $company_1->id]);
+        $admin_user_2->update(['company_id' => $company_2->id]);
 
         // below setPermissionsTeamId() is very crucial for getting and attaching team roles.
         // setPermissionsTeamId($company->id);
 
-        $user->assignRole($role);
+        $admin_user_1->assignRole($role_1);
+        $admin_user_2->assignRole($role_2);
 
         $permission_models = ['Companies', 'Branches','Customers','Users', 'Roles', 'Permissions'];
         $permissions = ['viewAny', 'view', 'create', 'update', 'delete', 'restore', 'forceDelete'];
@@ -52,6 +66,7 @@ class DatabaseSeeder extends Seeder
         }
 
         $all_permissions = Permission::all()->pluck('name');
-        $role->syncPermissions($all_permissions);
+        $role_1->syncPermissions($all_permissions);
+        $role_2->syncPermissions($all_permissions);
     }
 }
