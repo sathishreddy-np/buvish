@@ -33,6 +33,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
+        'email_verified_at'
     ];
 
     /**
@@ -56,15 +57,11 @@ class User extends Authenticatable implements FilamentUser
     ];
 
     // Only These Can Access Admin Panel
-    public function canAccessPanel(Panel $panel): bool
+    public function canAccessPanel(Panel $panel) : bool
     {
-        // This is very important for Spatie Teams permission
-        // setPermissionsTeamId(auth()->user()->company_id);
-
         // If email not verified then this will send email
         if (!$this->hasVerifiedEmail()) {
-
-            $this->sendEmailVerificationNotification();
+            // $this->sendEmailVerificationNotification();
 
             Notification::make()
                 ->title('Email sent. Please verify the email with in 60 minutes.')
@@ -73,6 +70,17 @@ class User extends Authenticatable implements FilamentUser
 
             return false;
         }
+
+        if (!$this->is_active) {
+
+            Notification::make()
+                ->title('Your account is inactive. Please contact administrator.')
+                ->warning()
+                ->send();
+
+            return false;
+        }
+
 
         return $this->hasVerifiedEmail();
     }

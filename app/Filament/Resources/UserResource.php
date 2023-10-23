@@ -88,19 +88,8 @@ class UserResource extends Resource
                         '1' => 'success',
                         default => 'gray',
                     }),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->sortable()
-                    ->icon(fn (string $state): string => match ($state) {
-                        '0' => 'heroicon-o-x-circle',
-                        '1' => 'heroicon-o-check-badge',
-                        default => 'heroicon-o-check-circle',
-                    })
-                    ->color(fn (string $state): string => match ($state) {
-                        '0' => 'danger',
-                        '1' => 'success',
-                        default => 'gray',
-                    }),
-
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable()
