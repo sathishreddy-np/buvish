@@ -31,8 +31,8 @@ class TestCommand extends Command
         // $user = User::with('roles')->find(1);
         // dd($user);
 
-        $user = User::find(1);
-        $count = $user->company()->count();
-        dd($count);
+        // $user = User::find(1);
+        // $count = $user->company()->count();
+        dd(url()->current());
     }
 }
