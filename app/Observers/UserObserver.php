@@ -49,35 +49,22 @@ class UserObserver
                 $admin_role->syncPermissions($all_permissions);
                 $user->assignRole($admin_role);
 
-                // $user->sendEmailVerificationNotification();
-
-                Notification::make()
-                ->title("Email invite sent. Please verify email your email.")
-                ->success()
-                ->send();
+                $user->sendEmailVerificationNotification();
 
                 if(Cookie::has('buvish_session')){
                     Cookie::queue(Cookie::forget('buvish_session'));
                 }
+
             }
         } else if (str_contains($url,'admin/users/create')) {
-            try {
                 $user->update(['company_id' => auth()->user()->company_id]);
 
-                // $email_sent = $user->sendEmailVerificationNotification();
-            } catch (\Throwable $th) {
+                $user->sendEmailVerificationNotification();
                 Notification::make()
-                    ->title("Email invite not sent.Please contact info@buvish.com .")
+                    ->title("Email invite  sent.Please verify email .")
                     ->success()
                     ->send();
-            }
 
-            // if($email_sent){
-            //     Notification::make()
-            //     ->title("Email invite sent. Ask $user->name to verify their email to log in.")
-            //     ->success()
-            //     ->send();
-            // }
         } else {
             Notification::make()
                 ->title("$user->name :: Please contact info@buvish.com")
