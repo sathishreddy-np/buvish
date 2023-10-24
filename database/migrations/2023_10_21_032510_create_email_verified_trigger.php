@@ -18,6 +18,8 @@ return new class extends Migration
             BEGIN
                 IF NEW.email_verified_at IS NOT NULL THEN
                     SET NEW.is_verified = 1;
+                ELSE
+                    SET NEW.is_verified = 0;
                 END IF;
             END
         ');
