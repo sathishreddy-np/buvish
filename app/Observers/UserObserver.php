@@ -61,7 +61,7 @@ class UserObserver
 
                 $user->sendEmailVerificationNotification();
                 Notification::make()
-                    ->title("Email invite  sent.Please verify email .")
+                    ->title("An email invite has been sent to $user->email. Please verify email.")
                     ->success()
                     ->send();
 
