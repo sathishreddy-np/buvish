@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Filament\Resources\UserResource\RelationManagers;
+namespace App\Filament\Resources\RoleResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
-use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class RolesRelationManager extends RelationManager
+class UsersRelationManager extends RelationManager
 {
-    protected static string $relationship = 'roles';
+    protected static string $relationship = 'users';
 
     public function form(Form $form): Form
     {
@@ -27,12 +26,12 @@ class RolesRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
-
         return $table
             ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                ->searchable(),
+                ->searchable()
+                ->sortable(),
             ])
             ->filters([
                 //
@@ -47,7 +46,6 @@ class RolesRelationManager extends RelationManager
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DetachBulkAction::make(),
                 ]),
-            ])
-            ->poll('10s');
+            ]);
     }
 }

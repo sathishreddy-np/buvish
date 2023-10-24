@@ -30,7 +30,8 @@ class PermissionsRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                ->searchable(),
+                ->searchable()
+                ->sortable(),
             ])
             ->filters([
                 //
