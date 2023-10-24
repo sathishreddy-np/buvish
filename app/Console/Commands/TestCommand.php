@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Http;
 
 class TestCommand extends Command
 {
@@ -33,6 +34,7 @@ class TestCommand extends Command
 
         // $user = User::find(1);
         // $count = $user->company()->count();
-        dd(url()->current());
+        $r = url('admin/logout');
+                dd($r);
     }
 }

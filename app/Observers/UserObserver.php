@@ -7,6 +7,7 @@ use App\Models\User;
 use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -30,7 +31,7 @@ class UserObserver
             $company = Company::create(['name' => 'Main Branch', 'user_id' => $user->id]);
             if ($company) {
                 $user->company_id = $company->id;
-                $user->update(['company_id' => $company->id, 'email_verified_at' => now()]);
+                $user->update(['company_id' => $company->id]);
 
                 $admin_role = Role::create(
                     [
