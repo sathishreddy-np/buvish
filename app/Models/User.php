@@ -13,7 +13,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -32,6 +35,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
+        'email_verified_at'
     ];
 
     /**
@@ -55,16 +59,11 @@ class User extends Authenticatable implements FilamentUser
     ];
 
     // Only These Can Access Admin Panel
-    public function canAccessPanel(Panel $panel): bool
+    public function canAccessPanel(Panel $panel) : bool
     {
-        // This is very important for Spatie Teams permission
-        // setPermissionsTeamId(auth()->user()->company_id);
-
         // If email not verified then this will send email
-        if (! $this->hasVerifiedEmail()) {
-
+        if (!$this->hasVerifiedEmail()) {
             $this->sendEmailVerificationNotification();
-
             Notification::make()
                 ->title('Email sent. Please verify the email with in 60 minutes.')
                 ->success()
@@ -72,6 +71,17 @@ class User extends Authenticatable implements FilamentUser
 
             return false;
         }
+
+        if (!$this->is_active) {
+
+            Notification::make()
+                ->title('Your account is inactive. Please contact administrator.')
+                ->warning()
+                ->send();
+
+            return false;
+        }
+
 
         return $this->hasVerifiedEmail();
     }
@@ -81,10 +91,5 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasOne(Company::class);
     }
-
-    // public function roles(): BelongsToMany
-    // {
-    //     return $this->belongsToMany(Role::class,'model_has_roles','model_id','role_id');
-    // }
 
 }

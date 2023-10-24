@@ -18,23 +18,14 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        $user = \App\Models\User::factory()->create([
-            'name' => 'Super Admin',
-            'email' => 'info@buvish.com',
-            'password' => '12345678',
-            'is_verified' => 1,
-        ]);
+        // $user = \App\Models\User::factory()->create([
+        //     'name' => 'Admin 1',
+        //     'email' => 'info@buvish.com',
+        //     'password' => '12345678',
+        //     'is_verified' => 1,
+        //     'is_active' => 1
+        // ]);
 
-        $company = Company::create(['user_id' => $user->id, 'name' => 'Pool']);
-
-        $role = Role::create(['name' => 'admin', 'guard_name' => 'web']);
-
-        $user->update(['company_id' => $company->id]);
-
-        // below setPermissionsTeamId() is very crucial for getting and attaching team roles.
-        // setPermissionsTeamId($company->id);
-
-        $user->assignRole($role);
 
         $permission_models = ['Companies', 'Branches','Customers','Users', 'Roles', 'Permissions'];
         $permissions = ['viewAny', 'view', 'create', 'update', 'delete', 'restore', 'forceDelete'];
@@ -49,5 +40,7 @@ class DatabaseSeeder extends Seeder
                 );
             }
         }
+
+
     }
 }

@@ -29,25 +29,25 @@ class PermissionsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('name')
+                ->searchable()
+                ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
-                Tables\Actions\AttachAction::make(),
+                Tables\Actions\AttachAction::make()
+                ->preloadRecordSelect(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\DetachAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DetachBulkAction::make(),
-                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->poll('10s');
     }
 }

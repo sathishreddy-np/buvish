@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\RoleResource\RelationManagers\PermissionsRelationManager;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers\RolesRelationManager;
 use App\Models\User;
@@ -44,11 +45,13 @@ class UserResource extends Resource
                     ->password()
                     ->required()
                     ->maxLength(255)
-                    ->confirmed(),
+                    ->confirmed()
+                    ->hiddenOn('view'),
                 Forms\Components\TextInput::make('password_confirmation')
                     ->password()
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->hiddenOn('view'),
             ]);
     }
 
@@ -85,6 +88,8 @@ class UserResource extends Resource
                         '1' => 'success',
                         default => 'gray',
                     }),
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable()
@@ -105,8 +110,12 @@ class UserResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
-                TernaryFilter::make('email_verified_at')
+                TernaryFilter::make('is_verified')
                     ->label('User verified')
+                    ->placeholder('Select status')
+                    ->nullable(),
+                TernaryFilter::make('is_active')
+                    ->label('Is active')
                     ->placeholder('Select status')
                     ->nullable(),
                 Filter::make('created_at')
@@ -125,22 +134,22 @@ class UserResource extends Resource
                                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
-                Filter::make('updated_at')
-                    ->form([
-                        DatePicker::make('updated_from'),
-                        DatePicker::make('updated_until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['updated_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['updated_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '<=', $date),
-                            );
-                    }),
+                // Filter::make('updated_at')
+                    // ->form([
+                    //     DatePicker::make('updated_from'),
+                    //     DatePicker::make('updated_until'),
+                    // ])
+                    // ->query(function (Builder $query, array $data): Builder {
+                    //     return $query
+                    //         ->when(
+                    //             $data['updated_from'],
+                    //             fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '>=', $date),
+                    //         )
+                    //         ->when(
+                    //             $data['updated_until'],
+                    //             fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '<=', $date),
+                    //         );
+                    // }),
 
             ], layout: FiltersLayout::AboveContentCollapsible)
             ->actions([
@@ -148,6 +157,8 @@ class UserResource extends Resource
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
                 ])
                     ->icon('heroicon-m-ellipsis-horizontal')
                     ->tooltip('Actions'),
@@ -164,7 +175,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RolesRelationManager::class
+            //
         ];
     }
 
@@ -183,6 +194,7 @@ class UserResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
-            ]);
+            ])
+            ->where('company_id', auth()->user()->company_id);
     }
 }

@@ -2,8 +2,17 @@
 
 namespace App\Observers;
 
+use App\Models\Company;
 use App\Models\User;
 use Filament\Notifications\Notification;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Route;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class UserObserver
 {
@@ -12,12 +21,6 @@ class UserObserver
      */
     public function creating(User $user): void
     {
-        $user->sendEmailVerificationNotification();
-
-        Notification::make()
-            ->title("Email invite sent. Ask $user->name to verify their email to log in.")
-            ->success()
-            ->send();
 
     }
 
@@ -26,7 +29,48 @@ class UserObserver
      */
     public function created(User $user): void
     {
-        //
+        $url= url()->previous();
+        if (str_contains($url,'admin/register')) {
+            $company = Company::create(['name' => 'Main Branch', 'user_id' => $user->id]);
+            if ($company) {
+                $user->company_id = $company->id;
+                $user->update(['company_id' => $company->id]);
+
+                $admin_role = Role::create(
+                    [
+                        'name' => 'Admin',
+                        'guard_name' => 'web',
+                        'company_id' => $company->id
+                    ]
+                );
+
+                $all_permissions = Permission::all()->pluck('name');
+
+                $admin_role->syncPermissions($all_permissions);
+                $user->assignRole($admin_role);
+
+                $user->sendEmailVerificationNotification();
+
+                if(Cookie::has('buvish_session')){
+                    Cookie::queue(Cookie::forget('buvish_session'));
+                }
+
+            }
+        } else if (str_contains($url,'admin/users/create')) {
+                $user->update(['company_id' => auth()->user()->company_id]);
+
+                $user->sendEmailVerificationNotification();
+                Notification::make()
+                    ->title("An email invite has been sent to $user->email. Please verify email.")
+                    ->success()
+                    ->send();
+
+        } else {
+            Notification::make()
+                ->title("$user->name :: Please contact info@buvish.com")
+                ->success()
+                ->send();
+        }
     }
 
     /**
