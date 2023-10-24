@@ -94,7 +94,9 @@ class UsersRelationManager extends RelationManager
                     ->nullable(),
             ], layout: FiltersLayout::AboveContentCollapsible)
             ->headerActions([
-                Tables\Actions\AttachAction::make(),
+                Tables\Actions\AttachAction::make()
+                ->recordSelectOptionsQuery(fn (Builder $query) => $query->where('company_id',auth()->user()->company_id))
+                ->preloadRecordSelect(),
             ])
             ->actions([
                 Tables\Actions\DetachAction::make(),

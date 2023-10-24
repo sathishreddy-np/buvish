@@ -29,7 +29,7 @@ class PermissionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('Permissions :: create');
+        return $user->hasRole('Super Admin');
     }
 
     /**
@@ -37,7 +37,7 @@ class PermissionPolicy
      */
     public function update(User $user, Permission $permission): bool
     {
-        return $user->hasPermissionTo('Permissions :: update');
+        return $user->hasRole('Super Admin');
     }
 
     /**
@@ -45,7 +45,7 @@ class PermissionPolicy
      */
     public function delete(User $user, Permission $permission): bool
     {
-        return $user->hasPermissionTo('Permissions :: delete');
+        return $user->hasRole('Super Admin');
     }
 
     /**
@@ -53,7 +53,7 @@ class PermissionPolicy
      */
     public function restore(User $user, Permission $permission): bool
     {
-        return $user->hasPermissionTo('Permissions :: restore');
+        return $user->hasRole('Super Admin');
     }
 
     /**
@@ -61,6 +61,6 @@ class PermissionPolicy
      */
     public function forceDelete(User $user, Permission $permission): bool
     {
-        return $user->hasPermissionTo('Permissions :: forceDelete');
+        return $user->hasRole('Super Admin');
     }
 }
