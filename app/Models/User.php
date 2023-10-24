@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -62,7 +64,6 @@ class User extends Authenticatable implements FilamentUser
         // If email not verified then this will send email
         if (!$this->hasVerifiedEmail()) {
             // $this->sendEmailVerificationNotification();
-
             Notification::make()
                 ->title('Email sent. Please verify the email with in 60 minutes.')
                 ->success()
