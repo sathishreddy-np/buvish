@@ -63,7 +63,7 @@ class User extends Authenticatable implements FilamentUser
     {
         // If email not verified then this will send email
         if (!$this->hasVerifiedEmail()) {
-            $this->sendEmailVerificationNotification();
+            // $this->sendEmailVerificationNotification();
             Notification::make()
                 ->title('Email sent. Please verify the email with in 60 minutes.')
                 ->success()
