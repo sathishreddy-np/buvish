@@ -43,10 +43,6 @@ class PermissionResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -56,43 +52,6 @@ class PermissionResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                Tables\Filters\TrashedFilter::make(),
-                Filter::make('created_at')
-                    ->form([
-                        DatePicker::make('created_from'),
-                        DatePicker::make('created_until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    }),
-                Filter::make('updated_at')
-                    ->form([
-                        DatePicker::make('updated_from'),
-                        DatePicker::make('updated_until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['updated_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['updated_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '<=', $date),
-                            );
-                    }),
-
-
-            ], layout: FiltersLayout::AboveContentCollapsible)
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
