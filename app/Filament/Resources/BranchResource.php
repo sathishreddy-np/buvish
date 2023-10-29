@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BranchResource\Pages;
 use App\Models\Branch;
+use App\Models\Company;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -27,12 +28,10 @@ class BranchResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('company_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('branch_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('company_id')
+                    ->label('Company')
+                    ->options(Company::all()->pluck('name', 'id'))
+                    ->searchable(),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(55),

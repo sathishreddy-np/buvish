@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Company;
 use App\Models\Customer;
 use App\Models\User;
+use App\Observers\CompanyObserver;
 use App\Observers\CustomerObserver;
 use App\Observers\PermissionObserver;
 use App\Observers\RoleObserver;
@@ -26,6 +28,7 @@ class EventServiceProvider extends ServiceProvider
         User::class => [UserObserver::class],
         Role::class => [RoleObserver::class],
         Permission::class => [PermissionObserver::class],
+        Company::class => [CompanyObserver::class],
         Customer::class => [CustomerObserver::class],
 
 
