@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Models\Company;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -27,12 +28,11 @@ class CompanyResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(55),
+                Hidden::make('user_id')
+                    ->default(auth()->user()->id)
             ]);
     }
 
@@ -101,6 +101,6 @@ class CompanyResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ])
-            ->where('id',auth()->user()->company_id);
+            ->where('user_id', auth()->user()->id);
     }
 }
