@@ -134,23 +134,6 @@ class UserResource extends Resource
                                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
-                // Filter::make('updated_at')
-                    // ->form([
-                    //     DatePicker::make('updated_from'),
-                    //     DatePicker::make('updated_until'),
-                    // ])
-                    // ->query(function (Builder $query, array $data): Builder {
-                    //     return $query
-                    //         ->when(
-                    //             $data['updated_from'],
-                    //             fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '>=', $date),
-                    //         )
-                    //         ->when(
-                    //             $data['updated_until'],
-                    //             fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '<=', $date),
-                    //         );
-                    // }),
-
             ], layout: FiltersLayout::AboveContentCollapsible)
             ->actions([
                 ActionGroup::make([

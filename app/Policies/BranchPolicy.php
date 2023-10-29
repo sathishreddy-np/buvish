@@ -29,7 +29,12 @@ class BranchPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('Branches :: create');
+        $companies = $user->companies();
+        foreach($companies as $company){
+            $branches =  $company->branches();
+        }
+
+        return $user->hasPermissionTo('Branches :: create') && $branches->count() <= 2;
     }
 
     /**
