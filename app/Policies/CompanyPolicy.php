@@ -29,7 +29,7 @@ class CompanyPolicy
     public function create(User $user): bool
     {
         // Checks If User Already Have A Company Record
-        return $user->hasPermissionTo('Companies :: create') && $user->company()->count() === 0;
+        return $user->hasPermissionTo('Companies :: create') && $user->companies()->count() === 0;
     }
 
     /**

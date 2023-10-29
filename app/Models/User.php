@@ -9,6 +9,7 @@ use Filament\Notifications\Notification;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -86,10 +87,10 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasVerifiedEmail();
     }
 
-    // Each User Can Create Have Company Only
-    public function company(): HasOne
+    // Each User Can Have One Company Only even with deleted companies
+    public function companies(): HasMany
     {
-        return $this->hasOne(Company::class);
+        return $this->hasMany(Company::class)->withTrashed();
     }
 
 }
