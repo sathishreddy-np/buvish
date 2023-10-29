@@ -87,10 +87,6 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasVerifiedEmail();
     }
 
-    // Each User Can Have One Company Only even with deleted companies
-    public function companies(): HasMany
-    {
-        return $this->hasMany(Company::class)->withTrashed();
-    }
+
 
 }
