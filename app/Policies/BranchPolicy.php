@@ -34,7 +34,7 @@ class BranchPolicy
         foreach($companies as $company){
             $existing_branches_count = $company->branches()->count();
             $can_have_branches = $user->limits['branches'];
-            if($existing_branches_count <= $can_have_branches){
+            if($existing_branches_count < $can_have_branches){
                 $with_in_branch_limit = true;
             }else{
                 $with_in_branch_limit = false;
