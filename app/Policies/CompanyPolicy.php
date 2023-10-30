@@ -28,8 +28,14 @@ class CompanyPolicy
      */
     public function create(User $user): bool
     {
-        // Checks If User Already Have A Company Record
-        return $user->hasPermissionTo('Companies :: create');
+        $existing_companies_count = $user->companies()->count();
+        $can_have_companies = $user->limits['companies'];
+        if($existing_companies_count < $can_have_companies){
+            $with_in_company_limit = true;
+        }else{
+            $with_in_company_limit = false;
+        }
+        return $user->hasPermissionTo('Companies :: create') && $with_in_company_limit;
     }
 
     /**

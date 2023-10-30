@@ -57,6 +57,7 @@ class User extends Authenticatable implements FilamentUser
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'limits' => 'json'
     ];
 
     // Only These Can Access Admin Panel
@@ -85,6 +86,11 @@ class User extends Authenticatable implements FilamentUser
 
 
         return $this->hasVerifiedEmail();
+    }
+
+    public function companies(): HasMany
+    {
+        return $this->hasMany(Company::class)->withTrashed();
     }
 
 

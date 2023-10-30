@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Branch;
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -29,8 +30,18 @@ class BranchPolicy
      */
     public function create(User $user): bool
     {
-
-        return $user->hasPermissionTo('Branches :: create');
+        $companies = Company::where('user_id', $user->id)->get();
+        foreach($companies as $company){
+            $existing_branches_count = $company->branches()->count();
+            $can_have_branches = $user->limits['branches'];
+            if($existing_branches_count <= $can_have_branches){
+                $with_in_branch_limit = true;
+            }else{
+                $with_in_branch_limit = false;
+                break;
+            }
+        }
+        return $user->hasPermissionTo('Branches :: create') && $with_in_branch_limit;
     }
 
     /**

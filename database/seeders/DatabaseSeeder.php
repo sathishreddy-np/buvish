@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Company;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -27,19 +28,28 @@ class DatabaseSeeder extends Seeder
         // ]);
 
 
-        $permission_models = ['Companies', 'Branches','Customers','Users', 'Roles', 'Permissions'];
-        $permissions = ['viewAny', 'view', 'create', 'update', 'delete', 'restore', 'forceDelete'];
+        // $permission_models = ['Companies', 'Branches','Customers','Users', 'Roles', 'Permissions'];
+        // $permissions = ['viewAny', 'view', 'create', 'update', 'delete', 'restore', 'forceDelete'];
 
-        foreach ($permission_models as $permission_model) {
-            foreach ($permissions as $permission) {
-                Permission::create(
-                    [
-                        'name' => "$permission_model :: $permission",
-                        "guard_name" => "web"
-                    ]
-                );
-            }
-        }
+        // foreach ($permission_models as $permission_model) {
+        //     foreach ($permissions as $permission) {
+        //         Permission::create(
+        //             [
+        //                 'name' => "$permission_model :: $permission",
+        //                 "guard_name" => "web"
+        //             ]
+        //         );
+        //     }
+        // }
+
+        DB::table('users')->update(['limits' => json_encode([
+            "users" => 10,
+            "roles" => 5,
+            "companies" => 1,
+            "branches" => 5,
+            "customers" => 1000,
+        ])]);
+
 
 
     }

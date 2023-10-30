@@ -31,6 +31,7 @@ class BranchResource extends Resource
                 Forms\Components\Select::make('company_id')
                     ->label('Company')
                     ->options(Company::all()->pluck('name', 'id'))
+                    ->required()
                     ->searchable(),
                 Forms\Components\TextInput::make('name')
                     ->required()
