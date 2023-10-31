@@ -29,7 +29,20 @@ class RolePolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('Roles :: create');
+        $existing_roles_count = $user->roles()->count();
+        if($user->limit){
+            $can_have_roles = $user->limits['roles'];
+
+        }else{
+            $can_have_roles = 5;
+        }
+        if($existing_roles_count < $can_have_roles){
+            $with_in_role_limit = true;
+        }else{
+            $with_in_role_limit = false;
+        }
+
+        return $user->hasPermissionTo('Roles :: create') && $with_in_role_limit;
     }
 
     /**

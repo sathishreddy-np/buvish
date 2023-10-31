@@ -29,7 +29,12 @@ class CompanyPolicy
     public function create(User $user): bool
     {
         $existing_companies_count = $user->companies()->count();
-        $can_have_companies = $user->limits['companies'];
+        if($user->limit){
+            $can_have_companies = $user->limits['companies'];
+
+        }else{
+            $can_have_companies = 1;
+        }
         if($existing_companies_count < $can_have_companies){
             $with_in_company_limit = true;
         }else{

@@ -30,17 +30,22 @@ class BranchPolicy
      */
     public function create(User $user): bool
     {
-        $companies = Company::where('user_id', $user->id)->get();
-        foreach($companies as $company){
+        $company = Company::where('user_id', $user->id)->first();
+        if($company){
             $existing_branches_count = $company->branches()->count();
-            $can_have_branches = $user->limits['branches'];
-            if($existing_branches_count < $can_have_branches){
+            if($user->limits){
+                $can_have_branches = $user->limits['branches'];
+            }else{
+                $can_have_branches = 5;
+            }
+            if($existing_branches_count < ($can_have_branches)){
                 $with_in_branch_limit = true;
             }else{
                 $with_in_branch_limit = false;
-                break;
             }
         }
+
+
         return $user->hasPermissionTo('Branches :: create') && $with_in_branch_limit;
     }
 

@@ -30,7 +30,7 @@ class BranchResource extends Resource
             ->schema([
                 Forms\Components\Select::make('company_id')
                     ->label('Company')
-                    ->options(Company::all()->pluck('name', 'id'))
+                    ->options(Company::where('user_id',auth()->user()->id)->pluck('name', 'id'))
                     ->required()
                     ->searchable(),
                 Forms\Components\TextInput::make('name')

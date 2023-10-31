@@ -27,7 +27,25 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('Users :: create');
+        if(auth()->check()){
+            $company_id = auth()->user()->company_id;
+            $users = User::where('company_id',$company_id)->get();
+            $existing_users_count = $users->count();
+            if($user->limit){
+                $can_have_users = $user->limits['users'];
+
+            }else{
+                $can_have_users = 5;
+            }
+            if($existing_users_count < $can_have_users){
+                $with_in_user_limit = true;
+            }else{
+                $with_in_user_limit = false;
+            }
+
+            return $user->hasPermissionTo('Users :: create') && $with_in_user_limit;
+
+        }
     }
 
     /**
