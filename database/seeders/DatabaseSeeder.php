@@ -42,13 +42,13 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        DB::table('users')->update(['limits' => json_encode([
-            "users" => 5,
-            "roles" => 5,
-            "companies" => 1,
-            "branches" => 5,
-            "customers" => 1000,
-        ])]);
+        // DB::table('users')->update(['limits' => json_encode([
+        //     "users" => 5,
+        //     "roles" => 5,
+        //     "companies" => 1,
+        //     "branches" => 5,
+        //     "customers" => 1000,
+        // ])]);
 
 
 
