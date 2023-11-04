@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Company;
 use App\Models\User;
+use App\Services\UserLimitService;
 
 class CompanyPolicy
 {
@@ -28,19 +29,11 @@ class CompanyPolicy
      */
     public function create(User $user): bool
     {
-        $existing_companies_count = $user->companies()->count();
-        if($user->limit){
-            $can_have_companies = $user->limits['companies'];
+        if(auth()->check()){
+            $resource_limit = UserLimitService::companyLimits($user);
 
-        }else{
-            $can_have_companies = 1;
+            return $user->hasPermissionTo('Companies :: create') && $resource_limit;
         }
-        if($existing_companies_count < $can_have_companies){
-            $with_in_company_limit = true;
-        }else{
-            $with_in_company_limit = false;
-        }
-        return $user->hasPermissionTo('Companies :: create') && $with_in_company_limit;
     }
 
     /**

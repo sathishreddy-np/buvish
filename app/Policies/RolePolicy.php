@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Services\UserLimitService;
 use Illuminate\Auth\Access\Response;
 
 class RolePolicy
@@ -29,20 +30,13 @@ class RolePolicy
      */
     public function create(User $user): bool
     {
-        $existing_roles_count = $user->roles()->count();
-        if($user->limit){
-            $can_have_roles = $user->limits['roles'];
+        if(auth()->check()){
+            $resource_limit = UserLimitService::roleLimits($user);
 
-        }else{
-            $can_have_roles = 5;
-        }
-        if($existing_roles_count < $can_have_roles){
-            $with_in_role_limit = true;
-        }else{
-            $with_in_role_limit = false;
-        }
+            return $user->hasPermissionTo('Roles :: create') && $resource_limit;
 
-        return $user->hasPermissionTo('Roles :: create') && $with_in_role_limit;
+
+        }
     }
 
     /**

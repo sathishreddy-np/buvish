@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Branch;
 use App\Models\Company;
 use App\Models\User;
+use App\Services\UserLimitService;
 use Illuminate\Auth\Access\Response;
 
 class BranchPolicy
@@ -30,23 +31,12 @@ class BranchPolicy
      */
     public function create(User $user): bool
     {
-        $company = Company::where('user_id', $user->id)->first();
-        if($company){
-            $existing_branches_count = $company->branches()->count();
-            if($user->limits){
-                $can_have_branches = $user->limits['branches'];
-            }else{
-                $can_have_branches = 5;
-            }
-            if($existing_branches_count < ($can_have_branches)){
-                $with_in_branch_limit = true;
-            }else{
-                $with_in_branch_limit = false;
-            }
+        if(auth()->check()){
+            $resource_limit = UserLimitService::branchLimits($user);
+
+            return $user->hasPermissionTo('Branches :: create') && $resource_limit;
+
         }
-
-
-        return $user->hasPermissionTo('Branches :: create') && $with_in_branch_limit;
     }
 
     /**
