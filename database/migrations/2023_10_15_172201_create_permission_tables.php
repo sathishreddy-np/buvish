@@ -51,7 +51,7 @@ class CreatePermissionTables extends Migration
             if ($teams || config('permission.testing')) {
                 $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);
             } else {
-                $table->unique(['company_id','name', 'guard_name']);
+                $table->unique(['company_id', 'name', 'guard_name']);
             }
         });
 

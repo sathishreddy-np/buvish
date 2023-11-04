@@ -32,7 +32,7 @@ class CompanyResource extends Resource
                     ->required()
                     ->maxLength(55),
                 Hidden::make('user_id')
-                    ->default(auth()->user()->id)
+                    ->default(auth()->user()->id),
             ]);
     }
 

@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\UserLimitService;
-use Illuminate\Auth\Access\Response;
 
 class RolePolicy
 {
@@ -30,12 +29,10 @@ class RolePolicy
      */
     public function create(User $user): bool
     {
-        if(auth()->check()){
+        if (auth()->check()) {
             $resource_limit = UserLimitService::roleLimits($user);
 
             return $user->hasPermissionTo('Roles :: create') && $resource_limit;
-
-
         }
     }
 

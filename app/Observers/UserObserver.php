@@ -6,12 +6,7 @@ use App\Models\Branch;
 use App\Models\Company;
 use App\Models\User;
 use Filament\Notifications\Notification;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -34,14 +29,14 @@ class UserObserver
             $company = Company::create(
                 [
                     'name' => 'My Company',
-                    'user_id' => $user->id
+                    'user_id' => $user->id,
                 ]
             );
             if ($company) {
                 Branch::create(
                     [
                         'name' => 'Main Branch',
-                        'company_id' => $company->id
+                        'company_id' => $company->id,
                     ]
                 );
                 $user->company_id = $company->id;
@@ -51,7 +46,7 @@ class UserObserver
                     [
                         'name' => 'Admin',
                         'guard_name' => 'web',
-                        'company_id' => $company->id
+                        'company_id' => $company->id,
                     ]
                 );
 
@@ -66,7 +61,7 @@ class UserObserver
                     Cookie::queue(Cookie::forget('buvish_session'));
                 }
             }
-        } else if (str_contains($url, 'admin/users/create')) {
+        } elseif (str_contains($url, 'admin/users/create')) {
             $user->update(['company_id' => auth()->user()->company_id]);
 
             $user->sendEmailVerificationNotification();

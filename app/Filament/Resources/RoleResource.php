@@ -40,7 +40,7 @@ class RoleResource extends Resource
                     ->relationship('permissions', 'name')
                     ->required()
                     ->preload()
-                    ->hiddenOn('view')
+                    ->hiddenOn('view'),
 
             ]);
     }
@@ -83,14 +83,14 @@ class RoleResource extends Resource
                                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
-                ],layout: FiltersLayout::AboveContentCollapsible)
+            ], layout: FiltersLayout::AboveContentCollapsible)
             ->actions([
                 ActionGroup::make([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
                 ])
                     ->icon('heroicon-m-ellipsis-horizontal')
                     ->tooltip('Actions'),
@@ -128,6 +128,6 @@ class RoleResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ])
-            ->where('company_id',auth()->user()->company_id);
+            ->where('company_id', auth()->user()->company_id);
     }
 }

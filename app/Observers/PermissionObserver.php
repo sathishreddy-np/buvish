@@ -15,6 +15,7 @@ class PermissionObserver
             $permission->guard_name = 'web';
         }
     }
+
     /**
      * Handle the Permission "created" event.
      */

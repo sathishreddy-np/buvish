@@ -17,5 +17,4 @@ class Company extends Model
     {
         return $this->hasMany(Branch::class)->withTrashed();
     }
-
 }

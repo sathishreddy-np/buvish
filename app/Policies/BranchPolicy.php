@@ -3,10 +3,8 @@
 namespace App\Policies;
 
 use App\Models\Branch;
-use App\Models\Company;
 use App\Models\User;
 use App\Services\UserLimitService;
-use Illuminate\Auth\Access\Response;
 
 class BranchPolicy
 {
@@ -31,7 +29,7 @@ class BranchPolicy
      */
     public function create(User $user): bool
     {
-        if(auth()->check()){
+        if (auth()->check()) {
             $resource_limit = UserLimitService::branchLimits($user);
 
             return $user->hasPermissionTo('Branches :: create') && $resource_limit;

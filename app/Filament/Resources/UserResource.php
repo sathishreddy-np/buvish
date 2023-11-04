@@ -2,9 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\RoleResource\RelationManagers\PermissionsRelationManager;
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers\RolesRelationManager;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -74,6 +72,7 @@ class UserResource extends Resource
                         $role_names = array_map(function ($role) {
                             return $role['name'];
                         }, $roles);
+
                         return $role_names;
                     }),
                 Tables\Columns\IconColumn::make('is_verified')

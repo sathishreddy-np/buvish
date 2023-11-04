@@ -8,17 +8,11 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Notifications\Notification;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Cookie;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser
@@ -36,7 +30,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
-        'email_verified_at'
+        'email_verified_at',
     ];
 
     /**
@@ -57,14 +51,14 @@ class User extends Authenticatable implements FilamentUser
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'limits' => 'json'
+        'limits' => 'json',
     ];
 
     // Only These Can Access Admin Panel
-    public function canAccessPanel(Panel $panel) : bool
+    public function canAccessPanel(Panel $panel): bool
     {
         // If email not verified then this will send email
-        if (!$this->hasVerifiedEmail()) {
+        if (! $this->hasVerifiedEmail()) {
             // $this->sendEmailVerificationNotification();
             Notification::make()
                 ->title('Email sent. Please verify the email with in 60 minutes.')
@@ -74,7 +68,7 @@ class User extends Authenticatable implements FilamentUser
             return false;
         }
 
-        if (!$this->is_active) {
+        if (! $this->is_active) {
 
             Notification::make()
                 ->title('Your account is inactive. Please contact administrator.')
@@ -84,7 +78,6 @@ class User extends Authenticatable implements FilamentUser
             return false;
         }
 
-
         return $this->hasVerifiedEmail();
     }
 
@@ -92,9 +85,4 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(Company::class)->withTrashed();
     }
-
-
-
-
-
 }

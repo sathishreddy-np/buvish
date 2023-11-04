@@ -30,7 +30,7 @@ class BranchResource extends Resource
             ->schema([
                 Forms\Components\Select::make('company_id')
                     ->label('Company')
-                    ->options(Company::where('user_id',auth()->user()->id)->pluck('name', 'id'))
+                    ->options(Company::where('user_id', auth()->user()->id)->pluck('name', 'id'))
                     ->required()
                     ->searchable(),
                 Forms\Components\TextInput::make('name')
@@ -104,6 +104,6 @@ class BranchResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ])
-            ->where('company_id',auth()->user()->company_id);
+            ->where('company_id', auth()->user()->company_id);
     }
 }

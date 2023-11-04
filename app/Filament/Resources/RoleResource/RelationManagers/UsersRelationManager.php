@@ -11,7 +11,6 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UsersRelationManager extends RelationManager
 {
@@ -33,53 +32,53 @@ class UsersRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                ->searchable()
-                ->sortable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('email')
-                ->sortable()
-                ->searchable(),
-            Tables\Columns\TextColumn::make('roles.name')
-                ->badge()
-                ->sortable()
-                ->searchable()
-                ->getStateUsing(function (Model $record) {
-                    $roles = $record->roles->toArray();
-                    $role_names = array_map(function ($role) {
-                        return $role['name'];
-                    }, $roles);
-                    return $role_names;
-                }),
-            Tables\Columns\IconColumn::make('is_verified')
-                ->sortable()
-                ->icon(fn (string $state): string => match ($state) {
-                    '0' => 'heroicon-o-x-circle',
-                    '1' => 'heroicon-o-check-badge',
-                    default => 'heroicon-o-check-circle',
-                })
-                ->color(fn (string $state): string => match ($state) {
-                    '0' => 'danger',
-                    '1' => 'success',
-                    default => 'gray',
-                }),
-            Tables\Columns\ToggleColumn::make('is_active')
-                ->sortable(),
-            Tables\Columns\TextColumn::make('email_verified_at')
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            Tables\Columns\TextColumn::make('created_at')
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            Tables\Columns\TextColumn::make('updated_at')
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            Tables\Columns\TextColumn::make('deleted_at')
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->badge()
+                    ->sortable()
+                    ->searchable()
+                    ->getStateUsing(function (Model $record) {
+                        $roles = $record->roles->toArray();
+                        $role_names = array_map(function ($role) {
+                            return $role['name'];
+                        }, $roles);
 
+                        return $role_names;
+                    }),
+                Tables\Columns\IconColumn::make('is_verified')
+                    ->sortable()
+                    ->icon(fn (string $state): string => match ($state) {
+                        '0' => 'heroicon-o-x-circle',
+                        '1' => 'heroicon-o-check-badge',
+                        default => 'heroicon-o-check-circle',
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        '0' => 'danger',
+                        '1' => 'success',
+                        default => 'gray',
+                    }),
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('email_verified_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
             ])
             ->filters([
@@ -95,8 +94,8 @@ class UsersRelationManager extends RelationManager
             ], layout: FiltersLayout::AboveContentCollapsible)
             ->headerActions([
                 Tables\Actions\AttachAction::make()
-                ->recordSelectOptionsQuery(fn (Builder $query) => $query->where('company_id',auth()->user()->company_id))
-                ->preloadRecordSelect(),
+                    ->recordSelectOptionsQuery(fn (Builder $query) => $query->where('company_id', auth()->user()->company_id))
+                    ->preloadRecordSelect(),
             ])
             ->actions([
                 Tables\Actions\DetachAction::make(),

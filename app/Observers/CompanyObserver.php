@@ -13,11 +13,11 @@ class CompanyObserver
      */
     public function created(Company $company): void
     {
-        if(auth()->check()){
+        if (auth()->check()) {
             $logged_user_id = Auth::user()->id;
 
-            if($logged_user_id){
-                User::where('id',$logged_user_id)->update(['company_id' => $company->id]);
+            if ($logged_user_id) {
+                User::where('id', $logged_user_id)->update(['company_id' => $company->id]);
             }
         }
     }

@@ -29,7 +29,7 @@ class CompanyPolicy
      */
     public function create(User $user): bool
     {
-        if(auth()->check()){
+        if (auth()->check()) {
             $resource_limit = UserLimitService::companyLimits($user);
 
             return $user->hasPermissionTo('Companies :: create') && $resource_limit;

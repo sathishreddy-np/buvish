@@ -147,8 +147,6 @@ class Permission extends Model implements PermissionContract
 
     /**
      * Get the current cached first permission.
-     *
-     * @return \Spatie\Permission\Contracts\Permission
      */
     protected static function getPermission(array $params = []): ?PermissionContract
     {

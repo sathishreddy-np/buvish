@@ -28,8 +28,9 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        if(auth()->check()){
+        if (auth()->check()) {
             $resource_limit = UserLimitService::userLimits($user);
+
             return $user->hasPermissionTo('Users :: create') && $resource_limit;
 
         }

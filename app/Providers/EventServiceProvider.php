@@ -31,7 +31,6 @@ class EventServiceProvider extends ServiceProvider
         Company::class => [CompanyObserver::class],
         Customer::class => [CustomerObserver::class],
 
-
     ];
 
     /**
