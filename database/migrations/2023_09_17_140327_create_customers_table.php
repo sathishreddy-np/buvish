@@ -21,6 +21,8 @@ return new class extends Migration
             $table->foreignIdFor(Branch::class)->nullable();
             $table->string('name');
             $table->string('email');
+            $table->boolean('is_active');
+            $table->json('notifications');
             $table->softDeletes();
             $table->timestamps();
         });
