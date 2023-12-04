@@ -174,13 +174,13 @@ class CustomerResource extends Resource
                     Tables\Actions\ForceDeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
                     Action::make('Send Email')
-                        ->icon('heroicon-m-paper-airplane')
+                        ->icon('heroicon-m-document-text')
                         ->mountUsing(fn (Forms\ComponentContainer $form, Customer $record) => $form->fill([
                             'email' => $record->email,
                             'reply_to' => [auth()->user()->email]
                         ]))
                         ->action(function (Customer $record, array $data): void {
-                            Mail::raw($data['message'], function ($message) use ($record, $data) {
+                            Mail::html($data['message'], function ($message) use ($record, $data) {
                                 $message->to($record->email);
                                 $message->subject($data['subject']);
                                 $message->cc($data['cc']);
@@ -198,8 +198,8 @@ class CustomerResource extends Resource
                                 ->label('Email To')
                                 ->disabled()
                                 ->required(),
-                            Section::make('Custom')
-                                ->description('Press tab or enter to add more emails.')
+                            Section::make('Additional Configuration')
+                                ->description('Press tab or enter to add more emails in this section input form fields.')
                                 ->schema([
                                     Forms\Components\TagsInput::make('reply_to')
                                         ->label('Reply To')
@@ -213,7 +213,9 @@ class CustomerResource extends Resource
                                         ->placeholder("Add BCC emails"),
 
                                 ])
-                                ->columns(3),
+                                ->columns(3)
+                                ->collapsed()
+                                ->compact(),
                             Forms\Components\TextInput::make('subject')
                                 ->label('Subject')
                                 ->required(),
