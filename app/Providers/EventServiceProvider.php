@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\Company;
 use App\Models\Customer;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use App\Observers\CompanyObserver;
 use App\Observers\CustomerObserver;
@@ -14,8 +16,6 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class EventServiceProvider extends ServiceProvider
 {

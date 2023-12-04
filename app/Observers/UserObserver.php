@@ -55,7 +55,7 @@ class UserObserver
                 $admin_role->syncPermissions($all_permissions);
                 $user->assignRole($admin_role);
 
-                // $user->sendEmailVerificationNotification();
+                $user->sendEmailVerificationNotification();
 
                 if (Cookie::has('buvish_session')) {
                     Cookie::queue(Cookie::forget('buvish_session'));
