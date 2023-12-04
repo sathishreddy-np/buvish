@@ -10,6 +10,8 @@ use App\Models\NotificationType;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -23,6 +25,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Mail;
 
 class CustomerResource extends Resource
 {
@@ -89,17 +92,17 @@ class CustomerResource extends Resource
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('notificationTypes.name')
-                ->badge()
-                ->sortable()
-                ->searchable()
-                ->getStateUsing(function (Model $record) {
-                    $notificationTypes = $record->notificationTypes->toArray();
-                    $notificationTypes = array_map(function ($notificationType) {
-                        return $notificationType['name'];
-                    }, $notificationTypes);
+                    ->badge()
+                    ->sortable()
+                    ->searchable()
+                    ->getStateUsing(function (Model $record) {
+                        $notificationTypes = $record->notificationTypes->toArray();
+                        $notificationTypes = array_map(function ($notificationType) {
+                            return $notificationType['name'];
+                        }, $notificationTypes);
 
-                    return $notificationTypes;
-                }),
+                        return $notificationTypes;
+                    }),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Created By')
                     ->numeric()
@@ -174,8 +177,16 @@ class CustomerResource extends Resource
                         ->icon('heroicon-m-paper-airplane')
                         ->mountUsing(fn (Forms\ComponentContainer $form, Customer $record) => $form->fill([
                             'email' => $record->email,
+                            'reply_to' => [auth()->user()->email]
                         ]))
                         ->action(function (Customer $record, array $data): void {
+                            Mail::raw($data['message'], function ($message) use ($record, $data) {
+                                $message->to($record->email);
+                                $message->subject($data['subject']);
+                                $message->cc($data['cc']);
+                                $message->bcc($data['bcc']);
+                                $message->replyTo($data['reply_to']);
+                            });
 
                             Notification::make()
                                 ->title("Email sent successfully to $record->email.")
@@ -184,9 +195,31 @@ class CustomerResource extends Resource
                         })
                         ->form([
                             Forms\Components\TextInput::make('email')
-                                ->label('Email')
+                                ->label('Email To')
+                                ->disabled()
                                 ->required(),
-                            Forms\Components\RichEditor::make('Email content')
+                            Section::make('Custom')
+                                ->description('Press tab or enter to add more emails.')
+                                ->schema([
+                                    Forms\Components\TagsInput::make('reply_to')
+                                        ->label('Reply To')
+                                        ->placeholder("Add Reply to emails")
+                                        ->required(),
+                                    Forms\Components\TagsInput::make('cc')
+                                        ->label('CC')
+                                        ->placeholder("Add CC emails"),
+                                    Forms\Components\TagsInput::make('bcc')
+                                        ->label('BCC')
+                                        ->placeholder("Add BCC emails"),
+
+                                ])
+                                ->columns(3),
+                            Forms\Components\TextInput::make('subject')
+                                ->label('Subject')
+                                ->required(),
+
+                            Forms\Components\RichEditor::make('message')
+                                ->label('Message')
                                 ->toolbarButtons([
                                     'attachFiles',
                                     'blockquote',
@@ -203,10 +236,10 @@ class CustomerResource extends Resource
                                     'underline',
                                     'undo',
                                 ])
-                                ->disableToolbarButtons([])
-                                ->fileAttachmentsDisk('s3')
-                                ->fileAttachmentsDirectory('attachments')
-                                ->fileAttachmentsVisibility('private')
+                            // ->disableToolbarButtons([])
+                            // ->fileAttachmentsDisk('s3')
+                            // ->fileAttachmentsDirectory('attachments')
+                            // ->fileAttachmentsVisibility('private')
                         ]),
                 ])
                     ->icon('heroicon-m-ellipsis-horizontal')
