@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
 
         foreach ($permission_models as $permission_model) {
             foreach ($permissions as $permission) {
-                Permission::create(
+                Permission::firstOrCreate(
                     [
                         'name' => "$permission_model :: $permission",
                         'guard_name' => 'web',

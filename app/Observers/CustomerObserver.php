@@ -13,7 +13,6 @@ class CustomerObserver
     {
         if (auth()->check()) {
             $customer->company_id = auth()->user()->company_id;
-            $customer->branch_id = auth()->user()->branch_id;
             $customer->user_id = auth()->user()->id;
         }
     }

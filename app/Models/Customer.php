@@ -6,17 +6,16 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $fillable = ['user_id', 'name', 'email','is_active','notifications'];
+    protected $fillable = ['user_id','branch_id','name', 'email','is_active'];
 
-    protected $casts = [
-        'notifications' => 'json',
-    ];
+
 
     // Show Only User Created Records. You Can Check By Using Role.
     protected static function booted(): void
@@ -37,4 +36,11 @@ class Customer extends Model
     {
         return $this->belongsTo(Branch::class);
     }
+
+    public function notificationTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(NotificationType::class);
+    }
+
+
 }

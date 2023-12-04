@@ -3,8 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CustomerResource\Pages;
+use App\Filament\Resources\CustomerResource\RelationManagers\NotificationTypesRelationManager;
 use App\Models\Branch;
 use App\Models\Customer;
+use App\Models\NotificationType;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -66,14 +68,11 @@ class CustomerResource extends Resource
                     ->default(true)
                     ->required(),
                 Forms\Components\Select::make('notifications')
-                    ->label('Notifications Opted')
-                    ->options([
-                        1 => "Email",
-                        2 => "Whatspp",
-                        3 => "SMS",
-                    ])
                     ->multiple()
-                    ->required(),
+                    ->relationship('notificationTypes', 'name')
+                    ->required()
+                    ->preload()
+                    ->hiddenOn('view'),
             ]);
     }
 
@@ -89,8 +88,18 @@ class CustomerResource extends Resource
                     ->sortable(),
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('notifications')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('notificationTypes.name')
+                ->badge()
+                ->sortable()
+                ->searchable()
+                ->getStateUsing(function (Model $record) {
+                    $notificationTypes = $record->notificationTypes->toArray();
+                    $notificationTypes = array_map(function ($notificationType) {
+                        return $notificationType['name'];
+                    }, $notificationTypes);
+
+                    return $notificationTypes;
+                }),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Created By')
                     ->numeric()
@@ -162,7 +171,7 @@ class CustomerResource extends Resource
                     Tables\Actions\ForceDeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
                     Action::make('Send Email')
-                        ->icon('heroicon-s-pencil')
+                        ->icon('heroicon-m-paper-airplane')
                         ->mountUsing(fn (Forms\ComponentContainer $form, Customer $record) => $form->fill([
                             'email' => $record->email,
                         ]))
@@ -215,7 +224,7 @@ class CustomerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            NotificationTypesRelationManager::class
         ];
     }
 
