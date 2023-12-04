@@ -60,10 +60,10 @@ class CustomerResource extends Resource
                 Forms\Components\Select::make('is_active')
                     ->label('Active')
                     ->options([
-                        1 => "Yes",
-                        0 => "No",
+                        true => "Yes",
+                        false => "No",
                     ])
-                    ->default(1)
+                    ->default(true)
                     ->required(),
                 Forms\Components\Select::make('notifications')
                     ->label('Notifications Opted')
@@ -86,6 +86,10 @@ class CustomerResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
+                    ->sortable(),
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('notifications')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Created By')
