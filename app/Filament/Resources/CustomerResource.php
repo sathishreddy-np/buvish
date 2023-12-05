@@ -100,8 +100,13 @@ class CustomerResource extends Resource
                         $notificationTypes = array_map(function ($notificationType) {
                             return $notificationType['name'];
                         }, $notificationTypes);
+                        if($notificationTypes){
+                            return $notificationTypes;
+                        }
+                        if(!$notificationTypes){
+                            return "NA";
+                        }
 
-                        return $notificationTypes;
                     }),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Created By')
@@ -120,7 +125,6 @@ class CustomerResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -175,6 +179,7 @@ class CustomerResource extends Resource
                     Tables\Actions\RestoreAction::make(),
                     Action::make('Send Email')
                         ->icon('heroicon-m-document-text')
+                        ->color('success')
                         ->mountUsing(fn (Forms\ComponentContainer $form, Customer $record) => $form->fill([
                             'email' => $record->email,
                             'reply_to' => [auth()->user()->email]
@@ -219,7 +224,6 @@ class CustomerResource extends Resource
                             Forms\Components\TextInput::make('subject')
                                 ->label('Subject')
                                 ->required(),
-
                             Forms\Components\RichEditor::make('message')
                                 ->label('Message')
                                 ->toolbarButtons([
@@ -237,15 +241,20 @@ class CustomerResource extends Resource
                                     'strike',
                                     'underline',
                                     'undo',
+                                    'preview'
                                 ])
+                                ->required(),
                             // ->disableToolbarButtons([])
                             // ->fileAttachmentsDisk('s3')
                             // ->fileAttachmentsDirectory('attachments')
                             // ->fileAttachmentsVisibility('private')
-                        ]),
+                        ])
+                        ->visible(function (Customer $record){
+                            return $record->notificationTypes()->where('name','email')->exists();
+                        }),
                 ])
-                    ->icon('heroicon-m-ellipsis-horizontal')
-                    ->tooltip('Actions'),
+                ->icon('heroicon-m-ellipsis-horizontal')
+                ->tooltip('Actions'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
