@@ -101,11 +101,11 @@ class ViewCustomer extends ViewRecord
                             'undo',
                             'preview'
                         ])
-                        ->required(),
-                    // ->disableToolbarButtons([])
-                    // ->fileAttachmentsDisk('s3')
-                    // ->fileAttachmentsDirectory('attachments')
-                    // ->fileAttachmentsVisibility('private')
+                        ->required()
+                        ->disableToolbarButtons([])
+                        ->fileAttachmentsDisk('s3')
+                        ->fileAttachmentsDirectory('attachments')
+                        ->fileAttachmentsVisibility('private')
                 ])
                 ->visible(function (Customer $record) {
                     return $record->notificationTypes()->where('name', 'email')->exists();
