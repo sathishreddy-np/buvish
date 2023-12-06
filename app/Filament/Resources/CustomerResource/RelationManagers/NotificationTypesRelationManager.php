@@ -44,6 +44,6 @@ class NotificationTypesRelationManager extends RelationManager
                     Tables\Actions\DetachBulkAction::make(),
                 ]),
             ])
-            ->poll('10s');
+            ->poll('3s');
     }
 }

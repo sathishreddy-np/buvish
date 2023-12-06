@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\NotificationType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
@@ -25,7 +26,7 @@ class DatabaseSeeder extends Seeder
         //     'is_active' => 1
         // ]);
 
-        $permission_models = ['Companies', 'Branches', 'Customers', 'Users', 'Roles', 'Permissions','NotificationType'];
+        $permission_models = ['Companies', 'Branches', 'Customers', 'Users', 'Roles', 'Permissions', 'NotificationType'];
         $permissions = ['viewAny', 'view', 'create', 'update', 'delete', 'restore', 'forceDelete'];
 
         foreach ($permission_models as $permission_model) {
@@ -37,6 +38,15 @@ class DatabaseSeeder extends Seeder
                     ]
                 );
             }
+        }
+
+        $notification_types = ['WhatsApp', 'Email', 'SMS'];
+        foreach ($notification_types as $notification_type) {
+            NotificationType::firstOrCreate(
+                [
+                    'name' => $notification_type
+                ]
+            );
         }
 
         // DB::table('users')->update(['limits' => json_encode([

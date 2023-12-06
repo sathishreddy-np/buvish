@@ -12,6 +12,7 @@ use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -25,6 +26,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 
 class CustomerResource extends Resource
@@ -73,7 +75,6 @@ class CustomerResource extends Resource
                 Forms\Components\Select::make('notifications')
                     ->multiple()
                     ->relationship('notificationTypes', 'name')
-                    ->required()
                     ->preload()
                     ->hiddenOn('view'),
             ]);
@@ -100,13 +101,12 @@ class CustomerResource extends Resource
                         $notificationTypes = array_map(function ($notificationType) {
                             return $notificationType['name'];
                         }, $notificationTypes);
-                        if($notificationTypes){
+                        if ($notificationTypes) {
                             return $notificationTypes;
                         }
-                        if(!$notificationTypes){
+                        if (!$notificationTypes) {
                             return "NA";
                         }
-
                     }),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Created By')
@@ -181,10 +181,12 @@ class CustomerResource extends Resource
                         ->icon('heroicon-m-document-text')
                         ->color('success')
                         ->mountUsing(fn (Forms\ComponentContainer $form, Customer $record) => $form->fill([
-                            'email' => $record->email,
+                            'from_email' => auth()->user()->email,
+                            'to_email' => $record->email,
                             'reply_to' => [auth()->user()->email]
                         ]))
                         ->action(function (Customer $record, array $data): void {
+                            Config::set('mail.from.address', auth()->user()->email);
                             Mail::html($data['message'], function ($message) use ($record, $data) {
                                 $message->to($record->email);
                                 $message->subject($data['subject']);
@@ -192,17 +194,27 @@ class CustomerResource extends Resource
                                 $message->bcc($data['bcc']);
                                 $message->replyTo($data['reply_to']);
                             });
-
+                            Config::set('mail.from.address', env('MAIL_FROM_ADDRESS'));
                             Notification::make()
                                 ->title("Email sent successfully to $record->email.")
                                 ->success()
                                 ->send();
                         })
                         ->form([
-                            Forms\Components\TextInput::make('email')
-                                ->label('Email To')
-                                ->disabled()
-                                ->required(),
+                            Section::make('Basic Configuration')
+                                ->schema([
+                                    TextInput::make('from_email')
+                                        ->label('Email From')
+                                        ->disabled()
+                                        ->required(),
+                                    TextInput::make('to_email')
+                                        ->label('Email To')
+                                        ->disabled()
+                                        ->required(),
+                                ])
+                                ->columns(2)
+                                ->collapsed()
+                                ->compact(),
                             Section::make('Additional Configuration')
                                 ->description('Press tab or enter to add more emails in this section input form fields.')
                                 ->schema([
@@ -243,18 +255,16 @@ class CustomerResource extends Resource
                                     'undo',
                                     'preview'
                                 ])
-                                ->required(),
-                            // ->disableToolbarButtons([])
-                            // ->fileAttachmentsDisk('s3')
-                            // ->fileAttachmentsDirectory('attachments')
-                            // ->fileAttachmentsVisibility('private')
+                            ->required()
+                            ->disableToolbarButtons([])
+                            ->fileAttachmentsDisk('s3')
                         ])
-                        ->visible(function (Customer $record){
-                            return $record->notificationTypes()->where('name','email')->exists();
+                        ->visible(function (Customer $record) {
+                            return $record->notificationTypes()->where('name', 'email')->exists();
                         }),
                 ])
-                ->icon('heroicon-m-ellipsis-horizontal')
-                ->tooltip('Actions'),
+                    ->icon('heroicon-m-ellipsis-horizontal')
+                    ->tooltip('Actions'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
