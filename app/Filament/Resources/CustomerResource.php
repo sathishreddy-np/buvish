@@ -281,24 +281,36 @@ class CustomerResource extends Resource
                     BulkAction::make('Send Email')
                         ->icon('heroicon-m-document-text')
                         ->color('success')
-                        ->mountUsing(fn (ComponentContainer $form, Collection $records) => $form->fill([
+                        ->mountUsing(function (ComponentContainer $form, Collection $records) {
+                            $emails_count = $records->filter(function ($customer) {
+                                return $customer->notificationTypes->contains(function ($notificationType) {
+                                    return strtolower($notificationType->name) === 'email';
+                                });
+                            })->count();
+                            return $form->fill([
                             'from_email' => auth()->user()->email,
-                            'to_email' => $records->pluck('email'),
+                            'to_email' => $emails_count,
                             'reply_to' => [auth()->user()->email],
                             'cc' => array_filter([auth()->user()->superAdminEmail(), auth()->user()->adminEmail()]),
-                        ]))
-                        ->action(function (Customer $record, array $data): void {
+                            ]);}
+                        )
+                        ->action(function (Collection $records, array $data): void {
                             Config::set('mail.from.address', auth()->user()->email);
-                            Mail::html($data['message'], function ($message) use ($record, $data) {
-                                $message->to($record->email);
-                                $message->subject($data['subject']);
-                                $message->cc($data['cc']);
-                                $message->bcc($data['bcc']);
-                                $message->replyTo($data['reply_to']);
-                            });
+                            foreach ($records as $record) {
+                                $exists = $record->notificationTypes()->where('name', 'email')->exists();
+                                if($exists){
+                                    Mail::html($data['message'], function ($message) use ($record, $data) {
+                                        $message->to($record->email);
+                                        $message->subject($data['subject']);
+                                        $message->cc($data['cc']);
+                                        $message->bcc($data['bcc']);
+                                        $message->replyTo($data['reply_to']);
+                                    });
+                                }
+                            }
                             Config::set('mail.from.address', env('MAIL_FROM_ADDRESS'));
                             Notification::make()
-                                ->title("Email sent successfully to $record->email.")
+                                ->title("Bulk emails sent successfully.")
                                 ->success()
                                 ->send();
                         })
@@ -310,7 +322,7 @@ class CustomerResource extends Resource
                                         ->disabled()
                                         ->required(),
                                     TextInput::make('to_email')
-                                        ->label('Email To')
+                                        ->label('Customers Opted For Email Communication')
                                         ->disabled()
                                         ->required(),
                                 ])
@@ -367,7 +379,7 @@ class CustomerResource extends Resource
                                 ->directory('attachments')
                                 ->visibility('private'),
 
-                                ])
+                        ])
                         ->deselectRecordsAfterCompletion(),
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
