@@ -36,6 +36,11 @@ class BranchResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(55),
+                Forms\Components\TextInput::make('email')
+                    ->email()
+                    ->required()
+                    ->maxLength(255),
+
             ]);
     }
 
@@ -44,6 +49,8 @@ class BranchResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()

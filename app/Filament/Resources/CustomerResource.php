@@ -6,12 +6,13 @@ use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers\NotificationTypesRelationManager;
 use App\Models\Branch;
 use App\Models\Customer;
-use App\Models\NotificationType;
-use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\ComponentContainer;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -19,11 +20,13 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Config;
@@ -67,8 +70,8 @@ class CustomerResource extends Resource
                 Forms\Components\Select::make('is_active')
                     ->label('Active')
                     ->options([
-                        true => "Yes",
-                        false => "No",
+                        true => 'Yes',
+                        false => 'No',
                     ])
                     ->default(true)
                     ->required(),
@@ -105,7 +108,7 @@ class CustomerResource extends Resource
                             return $notificationTypes;
                         }
                         if (!$notificationTypes) {
-                            return "NA";
+                            return 'NA';
                         }
                     }),
                 Tables\Columns\TextColumn::make('user.name')
@@ -183,7 +186,8 @@ class CustomerResource extends Resource
                         ->mountUsing(fn (Forms\ComponentContainer $form, Customer $record) => $form->fill([
                             'from_email' => auth()->user()->email,
                             'to_email' => $record->email,
-                            'reply_to' => [auth()->user()->email]
+                            'reply_to' => [auth()->user()->email],
+                            'cc' => array_filter([auth()->user()->superAdminEmail(), auth()->user()->adminEmail()]),
                         ]))
                         ->action(function (Customer $record, array $data): void {
                             Config::set('mail.from.address', auth()->user()->email);
@@ -220,14 +224,14 @@ class CustomerResource extends Resource
                                 ->schema([
                                     Forms\Components\TagsInput::make('reply_to')
                                         ->label('Reply To')
-                                        ->placeholder("Add Reply to emails")
+                                        ->placeholder('Add Reply to emails')
                                         ->required(),
                                     Forms\Components\TagsInput::make('cc')
                                         ->label('CC')
-                                        ->placeholder("Add CC emails"),
+                                        ->placeholder('Add CC emails'),
                                     Forms\Components\TagsInput::make('bcc')
                                         ->label('BCC')
-                                        ->placeholder("Add BCC emails"),
+                                        ->placeholder('Add BCC emails'),
 
                                 ])
                                 ->columns(3)
@@ -253,13 +257,17 @@ class CustomerResource extends Resource
                                     'strike',
                                     'underline',
                                     'undo',
-                                    'preview'
+                                    'preview',
                                 ])
-                            ->required()
-                            ->disableToolbarButtons([])
-                            ->fileAttachmentsDisk('s3')
-                            ->fileAttachmentsDirectory('attachments')
-                            ->fileAttachmentsVisibility('private')
+                                ->required()
+                                ->disableToolbarButtons([])
+                                ->fileAttachmentsDisk('s3')
+                                ->fileAttachmentsDirectory('attachments')
+                                ->fileAttachmentsVisibility('private'),
+                            FileUpload::make('attachments')
+                                ->disk('s3')
+                                ->directory('attachments')
+                                ->visibility('private'),
                         ])
                         ->visible(function (Customer $record) {
                             return $record->notificationTypes()->where('name', 'email')->exists();
@@ -270,6 +278,97 @@ class CustomerResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    BulkAction::make('Send Email')
+                        ->icon('heroicon-m-document-text')
+                        ->color('success')
+                        ->mountUsing(fn (ComponentContainer $form, Collection $records) => $form->fill([
+                            'from_email' => auth()->user()->email,
+                            'to_email' => $records->pluck('email'),
+                            'reply_to' => [auth()->user()->email],
+                            'cc' => array_filter([auth()->user()->superAdminEmail(), auth()->user()->adminEmail()]),
+                        ]))
+                        ->action(function (Customer $record, array $data): void {
+                            Config::set('mail.from.address', auth()->user()->email);
+                            Mail::html($data['message'], function ($message) use ($record, $data) {
+                                $message->to($record->email);
+                                $message->subject($data['subject']);
+                                $message->cc($data['cc']);
+                                $message->bcc($data['bcc']);
+                                $message->replyTo($data['reply_to']);
+                            });
+                            Config::set('mail.from.address', env('MAIL_FROM_ADDRESS'));
+                            Notification::make()
+                                ->title("Email sent successfully to $record->email.")
+                                ->success()
+                                ->send();
+                        })
+                        ->form([
+                            Section::make('Basic Configuration')
+                                ->schema([
+                                    TextInput::make('from_email')
+                                        ->label('Email From')
+                                        ->disabled()
+                                        ->required(),
+                                    TextInput::make('to_email')
+                                        ->label('Email To')
+                                        ->disabled()
+                                        ->required(),
+                                ])
+                                ->columns(2)
+                                ->collapsed()
+                                ->compact(),
+                            Section::make('Additional Configuration')
+                                ->description('Press tab or enter to add more emails in this section input form fields.')
+                                ->schema([
+                                    TagsInput::make('reply_to')
+                                        ->label('Reply To')
+                                        ->placeholder('Add Reply to emails')
+                                        ->required(),
+                                    TagsInput::make('cc')
+                                        ->label('CC')
+                                        ->placeholder('Add CC emails'),
+                                    TagsInput::make('bcc')
+                                        ->label('BCC')
+                                        ->placeholder('Add BCC emails'),
+
+                                ])
+                                ->columns(3)
+                                ->collapsed()
+                                ->compact(),
+                            TextInput::make('subject')
+                                ->label('Subject')
+                                ->required(),
+                            RichEditor::make('message')
+                                ->label('Message')
+                                ->toolbarButtons([
+                                    'attachFiles',
+                                    'blockquote',
+                                    'bold',
+                                    'bulletList',
+                                    'codeBlock',
+                                    'h2',
+                                    'h3',
+                                    'italic',
+                                    'link',
+                                    'orderedList',
+                                    'redo',
+                                    'strike',
+                                    'underline',
+                                    'undo',
+                                    'preview',
+                                ])
+                                ->required()
+                                ->disableToolbarButtons([])
+                                ->fileAttachmentsDisk('s3')
+                                ->fileAttachmentsDirectory('attachments')
+                                ->fileAttachmentsVisibility('private'),
+                            FileUpload::make('attachments')
+                                ->disk('s3')
+                                ->directory('attachments')
+                                ->visibility('private'),
+
+                                ])
+                        ->deselectRecordsAfterCompletion(),
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
@@ -280,7 +379,7 @@ class CustomerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            NotificationTypesRelationManager::class
+            NotificationTypesRelationManager::class,
         ];
     }
 

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Company::class)->constrained()->cascadeOnDelete();
             $table->string('name', 55)->unique();
+            $table->string('email')->unique();
             $table->softDeletes();
             $table->timestamps();
         });

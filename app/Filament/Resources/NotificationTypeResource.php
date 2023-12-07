@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\NotificationTypeResource\Pages;
-use App\Filament\Resources\NotificationTypeResource\RelationManagers;
 use App\Models\NotificationType;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -62,14 +61,14 @@ class NotificationTypeResource extends Resource
                 ]),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -78,8 +77,8 @@ class NotificationTypeResource extends Resource
             'view' => Pages\ViewNotificationType::route('/{record}'),
             'edit' => Pages\EditNotificationType::route('/{record}/edit'),
         ];
-    }    
-    
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

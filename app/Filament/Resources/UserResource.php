@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
+use App\Models\Branch;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -39,6 +40,11 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Select::make('branch_id')
+                    ->label('Branch')
+                    ->options(Branch::where('company_id', auth()->user()->company_id)->pluck('name', 'id'))
+                    ->required()
+                    ->searchable(),
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->required()
@@ -89,6 +95,10 @@ class UserResource extends Resource
                     }),
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('branch.name')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable()

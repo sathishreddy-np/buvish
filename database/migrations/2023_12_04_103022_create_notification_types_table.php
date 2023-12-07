@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Customer;
-use Illuminate\Contracts\Container\CircularDependencyException;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('notification_types', function (Blueprint $table) {
             $table->id();
-            $table->string("name")->unique();
+            $table->string('name')->unique();
             $table->softDeletes();
             $table->timestamps();
         });

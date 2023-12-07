@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
         foreach ($notification_types as $notification_type) {
             NotificationType::firstOrCreate(
                 [
-                    'name' => $notification_type
+                    'name' => $notification_type,
                 ]
             );
         }

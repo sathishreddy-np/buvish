@@ -7,8 +7,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class NotificationTypesRelationManager extends RelationManager
 {
@@ -36,7 +34,7 @@ class NotificationTypesRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\AttachAction::make()
-                ->preloadRecordSelect(),            ])
+                    ->preloadRecordSelect(),            ])
             ->actions([
                 Tables\Actions\DetachAction::make(),            ])
             ->bulkActions([

@@ -8,6 +8,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Notifications\Notification;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -84,5 +85,29 @@ class User extends Authenticatable implements FilamentUser
     public function companies(): HasMany
     {
         return $this->hasMany(Company::class)->withTrashed();
+    }
+
+    public function superAdminEmail()
+    {
+        $super_admin = $this->where('company_id', auth()->user()->company_id)
+            ->where('branch_id', null)
+            ->role('Super Admin')
+            ->first();
+
+        return ($super_admin && ($super_admin->email != auth()->user()->email)) ? $super_admin->email : null;
+    }
+
+    public function adminEmail()
+    {
+        $admin = $this->where('branch_id', auth()->user()->branch_id)
+            ->role('Admin')
+            ->first();
+
+        return ($admin && ($admin->email != auth()->user()->email)) ? $admin->email : null;
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

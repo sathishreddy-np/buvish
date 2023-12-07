@@ -7,6 +7,7 @@ use App\Models\Customer;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Forms\ComponentContainer;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TagsInput;
@@ -29,7 +30,8 @@ class ViewCustomer extends ViewRecord
                 ->mountUsing(fn (ComponentContainer $form, Customer $record) => $form->fill([
                     'from_email' => auth()->user()->email,
                     'to_email' => $record->email,
-                    'reply_to' => [auth()->user()->email]
+                    'reply_to' => [auth()->user()->email],
+                    'cc' => array_filter([auth()->user()->superAdminEmail(), auth()->user()->adminEmail()]),
                 ]))
                 ->action(function (Customer $record, array $data): void {
                     Config::set('mail.from.address', auth()->user()->email);
@@ -66,14 +68,14 @@ class ViewCustomer extends ViewRecord
                         ->schema([
                             TagsInput::make('reply_to')
                                 ->label('Reply To')
-                                ->placeholder("Add Reply to emails")
+                                ->placeholder('Add Reply to emails')
                                 ->required(),
                             TagsInput::make('cc')
                                 ->label('CC')
-                                ->placeholder("Add CC emails"),
+                                ->placeholder('Add CC emails'),
                             TagsInput::make('bcc')
                                 ->label('BCC')
-                                ->placeholder("Add BCC emails"),
+                                ->placeholder('Add BCC emails'),
 
                         ])
                         ->columns(3)
@@ -99,13 +101,18 @@ class ViewCustomer extends ViewRecord
                             'strike',
                             'underline',
                             'undo',
-                            'preview'
+                            'preview',
                         ])
                         ->required()
                         ->disableToolbarButtons([])
                         ->fileAttachmentsDisk('s3')
                         ->fileAttachmentsDirectory('attachments')
-                        ->fileAttachmentsVisibility('private')
+                        ->fileAttachmentsVisibility('private'),
+                    FileUpload::make('attachments')
+                        ->disk('s3')
+                        ->directory('attachments')
+                        ->visibility('private'),
+
                 ])
                 ->visible(function (Customer $record) {
                     return $record->notificationTypes()->where('name', 'email')->exists();

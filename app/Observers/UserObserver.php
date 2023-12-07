@@ -37,6 +37,7 @@ class UserObserver
                     [
                         'name' => 'Main Branch',
                         'company_id' => $company->id,
+                        'email' => $user->email,
                     ]
                 );
                 $user->company_id = $company->id;
@@ -44,7 +45,7 @@ class UserObserver
 
                 $admin_role = Role::create(
                     [
-                        'name' => 'Admin',
+                        'name' => 'Super Admin',
                         'guard_name' => 'web',
                         'company_id' => $company->id,
                     ]
