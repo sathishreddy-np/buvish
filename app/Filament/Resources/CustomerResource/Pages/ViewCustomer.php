@@ -108,11 +108,6 @@ class ViewCustomer extends ViewRecord
                         ->fileAttachmentsDisk('s3')
                         ->fileAttachmentsDirectory('attachments')
                         ->fileAttachmentsVisibility('private'),
-                    FileUpload::make('attachments')
-                        ->disk('s3')
-                        ->directory('attachments')
-                        ->visibility('private'),
-
                 ])
                 ->visible(function (Customer $record) {
                     return $record->notificationTypes()->where('name', 'email')->exists();
