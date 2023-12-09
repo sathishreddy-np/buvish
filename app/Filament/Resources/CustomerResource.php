@@ -9,7 +9,6 @@ use App\Models\Customer;
 use Filament\Forms;
 use Filament\Forms\ComponentContainer;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TagsInput;
@@ -107,7 +106,7 @@ class CustomerResource extends Resource
                         if ($notificationTypes) {
                             return $notificationTypes;
                         }
-                        if (!$notificationTypes) {
+                        if (! $notificationTypes) {
                             return 'NA';
                         }
                     }),
@@ -283,18 +282,20 @@ class CustomerResource extends Resource
                                     return strtolower($notificationType->name) === 'email';
                                 });
                             })->count();
+
                             return $form->fill([
-                            'from_email' => auth()->user()->email,
-                            'to_email' => $emails_count,
-                            'reply_to' => [auth()->user()->email],
-                            'cc' => array_filter([auth()->user()->superAdminEmail(), auth()->user()->adminEmail()]),
-                            ]);}
+                                'from_email' => auth()->user()->email,
+                                'to_email' => $emails_count,
+                                'reply_to' => [auth()->user()->email],
+                                'cc' => array_filter([auth()->user()->superAdminEmail(), auth()->user()->adminEmail()]),
+                            ]);
+                        }
                         )
                         ->action(function (Collection $records, array $data): void {
                             Config::set('mail.from.address', auth()->user()->email);
                             foreach ($records as $record) {
                                 $exists = $record->notificationTypes()->where('name', 'email')->exists();
-                                if($exists){
+                                if ($exists) {
                                     Mail::html($data['message'], function ($message) use ($record, $data) {
                                         $message->to($record->email);
                                         $message->subject($data['subject']);
@@ -306,7 +307,7 @@ class CustomerResource extends Resource
                             }
                             Config::set('mail.from.address', env('MAIL_FROM_ADDRESS'));
                             Notification::make()
-                                ->title("Bulk emails sent successfully.")
+                                ->title('Bulk emails sent successfully.')
                                 ->success()
                                 ->send();
                         })

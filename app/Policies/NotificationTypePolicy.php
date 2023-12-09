@@ -12,7 +12,7 @@ class NotificationTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('NotificationType :: viewAny');
+        return $user->hasPermissionTo('NotificationTypes :: viewAny');
     }
 
     /**
@@ -20,7 +20,7 @@ class NotificationTypePolicy
      */
     public function view(User $user, NotificationType $notificationType): bool
     {
-        return $user->hasPermissionTo('NotificationType :: view');
+        return $user->hasPermissionTo('NotificationTypes :: view');
     }
 
     /**
@@ -28,7 +28,7 @@ class NotificationTypePolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('NotificationType :: create');
+        return $user->hasPermissionTo('NotificationTypes :: create');
     }
 
     /**
@@ -36,7 +36,7 @@ class NotificationTypePolicy
      */
     public function update(User $user, NotificationType $notificationType): bool
     {
-        return $user->hasPermissionTo('NotificationType :: update');
+        return $user->hasPermissionTo('NotificationTypes :: update');
     }
 
     /**
@@ -44,7 +44,7 @@ class NotificationTypePolicy
      */
     public function delete(User $user, NotificationType $notificationType): bool
     {
-        return $user->hasPermissionTo('NotificationType :: delete');
+        return $user->hasPermissionTo('NotificationTypes :: delete');
     }
 
     /**
@@ -52,7 +52,7 @@ class NotificationTypePolicy
      */
     public function restore(User $user, NotificationType $notificationType): bool
     {
-        return $user->hasPermissionTo('NotificationType :: restore');
+        return $user->hasPermissionTo('NotificationTypes :: restore');
     }
 
     /**
@@ -60,6 +60,6 @@ class NotificationTypePolicy
      */
     public function forceDelete(User $user, NotificationType $notificationType): bool
     {
-        return $user->hasPermissionTo('NotificationType :: forceDelete');
+        return $user->hasPermissionTo('NotificationTypes :: forceDelete');
     }
 }

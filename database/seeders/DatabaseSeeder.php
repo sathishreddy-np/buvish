@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         //     'is_active' => 1
         // ]);
 
-        $permission_models = ['Companies', 'Branches', 'Customers', 'Users', 'Roles', 'Permissions', 'NotificationType'];
+        $permission_models = ['Companies', 'Branches', 'Customers', 'Users', 'Roles', 'Permissions', 'NotificationTypes', 'Activities', 'BookingTimings'];
         $permissions = ['viewAny', 'view', 'create', 'update', 'delete', 'restore', 'forceDelete'];
 
         foreach ($permission_models as $permission_model) {

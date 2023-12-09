@@ -7,7 +7,6 @@ use App\Models\Customer;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Forms\ComponentContainer;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TagsInput;
