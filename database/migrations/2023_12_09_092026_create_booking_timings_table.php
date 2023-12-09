@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Activity::class);
             $table->string('day',55);
+            $table->enum('day', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
             $table->integer('start_time');
             $table->integer('end_time');
             $table->integer('no_of_slots')->default(0);
