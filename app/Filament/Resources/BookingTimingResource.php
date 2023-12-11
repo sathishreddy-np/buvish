@@ -7,6 +7,8 @@ use App\Filament\Resources\BookingTimingResource\RelationManagers;
 use App\Models\Activity;
 use App\Models\BookingTiming;
 use Filament\Forms;
+use Filament\Forms\Components\Builder as ComponentsBuilder;
+use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -32,75 +34,82 @@ class BookingTimingResource extends Resource
                     }))
                     ->required()
                     ->searchable(),
-                Forms\Components\Select::make('day')
-                    ->options([
-                        'monday' => 'Monday',
-                        'tuesday' => 'Tuesday',
-                        'wednesday' => 'Wednesday',
-                        'thursday' => 'Thursday',
-                        'friday' => 'Friday',
-                        'saturday' => 'Saturday',
-                        'sunday' => 'Sunday',
-                    ])
-                    ->required()
-                    ->searchable(),
-                Repeater::make('Schedule')
-                    ->schema([
-                        Forms\Components\Select::make('day')
-                    ->options([
-                        'monday' => 'Monday',
-                        'tuesday' => 'Tuesday',
-                        'wednesday' => 'Wednesday',
-                        'thursday' => 'Thursday',
-                        'friday' => 'Friday',
-                        'saturday' => 'Saturday',
-                        'sunday' => 'Sunday',
-                    ])
-                    ->required()
-                    ->multiple()
-                    ->searchable(),
-                        Forms\Components\TimePicker::make('start_time')
-                            ->required(),
-                        Forms\Components\TimePicker::make('end_time')
-                            ->required(),
-                        Forms\Components\TextInput::make('no_of_slots')
-                            ->required()
-                            ->numeric()
-                            ->default(0),
+                ComponentsBuilder::make('timings')
+                    ->blocks([
+                        Block::make('Opening Timings')
+                            ->schema([
+                                Forms\Components\Select::make('day')
+                                    ->options([
+                                        'monday' => 'Monday',
+                                        'tuesday' => 'Tuesday',
+                                        'wednesday' => 'Wednesday',
+                                        'thursday' => 'Thursday',
+                                        'friday' => 'Friday',
+                                        'saturday' => 'Saturday',
+                                        'sunday' => 'Sunday',
+                                    ])
+                                    ->required()
+                                    ->multiple()
+                                    ->searchable(),
+                                Forms\Components\TimePicker::make('start_time')
+                                    ->required(),
+                                Forms\Components\TimePicker::make('end_time')
+                                    ->required(),
+                                Forms\Components\TextInput::make('no_of_slots')
+                                    ->required()
+                                    ->numeric()
+                                    ->default(0),
+                                Repeater::make('allowed_genders')
+                                    ->schema([
+                                        Forms\Components\Select::make('gender')
+                                            ->options([
+                                                'male' => 'Male',
+                                                'female' => 'Female',
+                                                'kid' => 'Kid',
+                                            ])
+                                            ->required()
+                                            ->searchable(),
+                                        Forms\Components\TextInput::make('age_from')
+                                            ->required()
+                                            ->numeric(),
+                                        Forms\Components\TextInput::make('age_to')
+                                            ->required()
+                                            ->numeric(),
+                                        Forms\Components\TextInput::make('amount')
+                                            ->required()
+                                            ->numeric(),
 
-                        Repeater::make('allowed_categories')
-                        ->schema([
-                            Forms\Components\Select::make('gender')
-                            ->options([
-                                'male' => 'Male',
-                                'female' => 'Female',
-                                'kid' => 'Kid',
+                                    ])
+                                    ->deletable(true)
+                                    ->addable(true)
+                                    ->cloneable()
+                                    ->columnSpanFull()
+                                    ->columns(4)
+                                    ->collapsible(),
+                            ]),
+                        Block::make('Closing Timings')
+                            ->schema([
+                                Forms\Components\Select::make('day')
+                                    ->options([
+                                        'monday' => 'Monday',
+                                        'tuesday' => 'Tuesday',
+                                        'wednesday' => 'Wednesday',
+                                        'thursday' => 'Thursday',
+                                        'friday' => 'Friday',
+                                        'saturday' => 'Saturday',
+                                        'sunday' => 'Sunday',
+                                    ])
+                                    ->required()
+                                    ->multiple()
+                                    ->searchable(),
+                                Forms\Components\TimePicker::make('start_time')
+                                    ->required(),
+                                Forms\Components\TimePicker::make('end_time')
+                                    ->required(),
                             ])
-                            ->required()
-                            ->searchable(),
-                            Forms\Components\TextInput::make('age_from')
-                            ->required()
-                            ->numeric(),
-                            Forms\Components\TextInput::make('age_to')
-                            ->required()
-                            ->numeric(),
-                            Forms\Components\TextInput::make('amount')
-                            ->required()
-                            ->numeric(),
-
-                        ])
-                        ->deletable(false)
-                        ->addable(false)
-                        ->columnSpanFull()
-                        ->columns(4)
-                        ->collapsed()
-                        ->defaultItems(3),
-                    ])
-                    ->addActionLabel('New Schedule')
+                    ])->columnSpanFull()
                     ->collapsible()
-                    ->columnSpanFull()
-                    ->columns(4),
-
+                    ->cloneable() ,
             ]);
     }
 

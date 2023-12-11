@@ -15,11 +15,7 @@ return new class extends Migration
         Schema::create('booking_timings', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Activity::class);
-            $table->string('day',55);
-            $table->integer('start_time');
-            $table->integer('end_time');
-            $table->integer('no_of_slots')->default(0);
-            $table->json('allowed_categories'); //"gender","age_from","age_to", "price"
+            $table->json('timings');
             $table->softDeletes();
             $table->timestamps();
         });

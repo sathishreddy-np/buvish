@@ -364,7 +364,6 @@ class CustomerResource extends Resource
                                     'strike',
                                     'underline',
                                     'undo',
-                                    'preview',
                                 ])
                                 ->required()
                                 ->disableToolbarButtons([])
