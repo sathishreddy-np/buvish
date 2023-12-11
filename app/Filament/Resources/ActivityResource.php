@@ -28,11 +28,6 @@ class ActivityResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('branch_id')
-                    ->label('Branch')
-                    ->options(Branch::where('company_id', auth()->user()->company_id)->pluck('name', 'id'))
-                    ->required()
-                    ->searchable(),
                 Forms\Components\Select::make('name')
                     ->label('Activity')
                     ->options([
@@ -49,9 +44,6 @@ class ActivityResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('branch_id')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('deleted_at')

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Branch;
+use App\Models\Company;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Branch::class);
+            $table->foreignIdFor(Company::class);
             $table->string('name')->unique();
             $table->softDeletes();
             $table->timestamps();

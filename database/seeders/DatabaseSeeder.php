@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Activity;
 use App\Models\NotificationType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +46,16 @@ class DatabaseSeeder extends Seeder
             NotificationType::firstOrCreate(
                 [
                     'name' => $notification_type,
+                ]
+            );
+        }
+
+        $activities = ['swimming', 'cricket', 'badminton', 'gym'];
+        foreach ($activities as $activity) {
+            Activity::firstOrCreate(
+                [
+                    'company_id' => 1,
+                    'name' => $activity,
                 ]
             );
         }
