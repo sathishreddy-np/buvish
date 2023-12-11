@@ -28,15 +28,13 @@ class ActivityResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('name')
-                    ->label('Activity')
-                    ->options([
-                        "swimming" => 'Swimming',
-                        "cricket" => 'Cricket',
-                        "badminton" => 'Badminton',
-                        "gym" => 'Gym',
-                    ])
-                    ->required(),
+                Forms\Components\Hidden::make('company_id')
+                ->default(auth()->user()->company_id)
+                ->required(),
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->dehydrateStateUsing(fn (string $state): string => strtolower($state))
+                    ->maxLength(55),
             ]);
     }
 
@@ -44,6 +42,8 @@ class ActivityResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('company_id')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('deleted_at')

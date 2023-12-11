@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BranchResource\Pages;
 use App\Filament\Resources\BranchResource\RelationManagers\ActivitiesRelationManager;
+use App\Filament\Resources\BranchResource\RelationManagers\BookingTimingsRelationManager;
+use App\Filament\Resources\BranchResource\RelationManagers\BranchTimingsRelationManager;
 use App\Models\Branch;
 use App\Models\Company;
 use Filament\Forms;
@@ -92,7 +94,8 @@ class BranchResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ActivitiesRelationManager::class
+            ActivitiesRelationManager::class,
+            BookingTimingsRelationManager::class
         ];
     }
 
