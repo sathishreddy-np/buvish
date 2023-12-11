@@ -6,12 +6,12 @@ use App\Filament\Resources\ActivityResource\Pages;
 use App\Filament\Resources\ActivityResource\RelationManagers;
 use App\Models\Activity;
 use App\Models\Branch;
-use Filament\Actions\ActionGroup;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
@@ -36,10 +36,10 @@ class ActivityResource extends Resource
                 Forms\Components\Select::make('name')
                     ->label('Activity')
                     ->options([
-                        "Swimming" => 'Swimming',
-                        "Cricket" => 'Cricket',
-                        "Badminton" => 'Badminton',
-                        "Gym" => 'Gym',
+                        "swimming" => 'Swimming',
+                        "cricket" => 'Cricket',
+                        "badminton" => 'Badminton',
+                        "gym" => 'Gym',
                     ])
                     ->required(),
             ]);
@@ -107,10 +107,13 @@ class ActivityResource extends Resource
                 ActionGroup::make([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
                 ])
                 ->icon('heroicon-m-ellipsis-horizontal')
-                    ->tooltip('Actions'),
-            ])
+                ->tooltip('Actions'),
+                ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

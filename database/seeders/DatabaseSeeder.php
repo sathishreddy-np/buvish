@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        $notification_types = ['WhatsApp', 'Email', 'SMS'];
+        $notification_types = ['whatsapp', 'email', 'sms'];
         foreach ($notification_types as $notification_type) {
             NotificationType::firstOrCreate(
                 [

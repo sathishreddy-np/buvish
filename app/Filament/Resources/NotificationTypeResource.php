@@ -25,6 +25,7 @@ class NotificationTypeResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
+                    ->dehydrateStateUsing(fn (string $state): string => strtolower($state))
                     ->maxLength(255),
             ]);
     }
