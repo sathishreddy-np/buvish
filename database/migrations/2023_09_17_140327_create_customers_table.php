@@ -20,7 +20,11 @@ return new class extends Migration
             $table->foreignIdFor(Company::class);
             $table->foreignIdFor(Branch::class)->nullable();
             $table->string('name');
-            $table->string('email');
+            $table->string('email')->nullable();
+            $table->integer('country_code')->default(91);
+            $table->bigInteger('phone');
+            $table->integer('age');
+            $table->string('gender');
             $table->boolean('is_active');
             $table->softDeletes();
             $table->timestamps();

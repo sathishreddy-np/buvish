@@ -40,7 +40,7 @@ class CustomerResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name', 'email'];
+        return ['name', 'email', 'phone'];
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array
@@ -48,6 +48,7 @@ class CustomerResource extends Resource
         return [
             'Name' => $record->name,
             'Email' => $record->email,
+            'Phone' => $record->country_code . " - " . $record->phone,
         ];
     }
 
@@ -55,18 +56,35 @@ class CustomerResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('branch_id')
+                ->label('Branch')
+                ->options(Branch::where('company_id', auth()->user()->company_id)->pluck('name', 'id'))
+                ->required()
+                ->searchable(),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('branch_id')
-                    ->label('Branch')
-                    ->options(Branch::where('company_id', auth()->user()->company_id)->pluck('name', 'id'))
+                Forms\Components\Select::make('gender')
+                    ->options([
+                        'male' => 'Male',
+                        'female' => 'Female',
+                        'kid' => 'Kid',
+                    ])
                     ->required()
                     ->searchable(),
+                Forms\Components\TextInput::make('age')
+                ->minValue(1)
+                ->maxValue(100)
+                    ->numeric()
+                    ->required(),
+                Forms\Components\TextInput::make('email')
+                    ->email()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('phone')
+                    ->prefix('+91')
+                    ->tel()
+                    ->telRegex('^[6789]\d{9}$')
+                    ->required(),
                 Forms\Components\Select::make('is_active')
                     ->label('Active')
                     ->options([
@@ -93,6 +111,18 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('country_code')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('phone')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('gender')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('age')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('notificationTypes.name')
@@ -107,7 +137,7 @@ class CustomerResource extends Resource
                         if ($notificationTypes) {
                             return $notificationTypes;
                         }
-                        if (! $notificationTypes) {
+                        if (!$notificationTypes) {
                             return 'NA';
                         }
                     }),
@@ -277,20 +307,21 @@ class CustomerResource extends Resource
                     BulkAction::make('Send Email')
                         ->icon('heroicon-m-document-text')
                         ->color('success')
-                        ->mountUsing(function (ComponentContainer $form, Collection $records) {
-                            $emails_count = $records->filter(function ($customer) {
-                                return $customer->notificationTypes->contains(function ($notificationType) {
-                                    return strtolower($notificationType->name) === 'email';
-                                });
-                            })->count();
+                        ->mountUsing(
+                            function (ComponentContainer $form, Collection $records) {
+                                $emails_count = $records->filter(function ($customer) {
+                                    return $customer->notificationTypes->contains(function ($notificationType) {
+                                        return strtolower($notificationType->name) === 'email';
+                                    });
+                                })->count();
 
-                            return $form->fill([
-                                'from_email' => auth()->user()->email,
-                                'to_email' => $emails_count,
-                                'reply_to' => [auth()->user()->email],
-                                'cc' => array_filter([auth()->user()->superAdminEmail(), auth()->user()->adminEmail()]),
-                            ]);
-                        }
+                                return $form->fill([
+                                    'from_email' => auth()->user()->email,
+                                    'to_email' => $emails_count,
+                                    'reply_to' => [auth()->user()->email],
+                                    'cc' => array_filter([auth()->user()->superAdminEmail(), auth()->user()->adminEmail()]),
+                                ]);
+                            }
                         )
                         ->action(function (Collection $records, array $data): void {
                             Config::set('mail.from.address', auth()->user()->email);
