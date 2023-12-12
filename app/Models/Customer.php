@@ -39,4 +39,9 @@ class Customer extends Model
     {
         return $this->belongsToMany(NotificationType::class);
     }
+
+    public function bookings(): BelongsToMany
+    {
+        return $this->belongsToMany(Booking::class);
+    }
 }
