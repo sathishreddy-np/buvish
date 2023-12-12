@@ -18,4 +18,8 @@ class BookingTiming extends Model
     public function branch() : BelongsTo {
         return $this->belongsTo(Branch::class);
     }
+
+    public function activity() : BelongsTo {
+        return $this->belongsTo(Activity::class);
+    }
 }

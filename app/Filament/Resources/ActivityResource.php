@@ -42,7 +42,7 @@ class ActivityResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company_id')
+                Tables\Columns\TextColumn::make('company.name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),

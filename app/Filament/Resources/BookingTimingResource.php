@@ -123,11 +123,9 @@ class BookingTimingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('branch_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('branch.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('activity_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('activity.name')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()

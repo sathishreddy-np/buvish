@@ -118,10 +118,10 @@ class BookingTimingsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('branch_id')
+                Tables\Columns\TextColumn::make('branch.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('activity_id')
+                Tables\Columns\TextColumn::make('activity.name')
                     ->numeric()
                     ->sortable(),
             ])
