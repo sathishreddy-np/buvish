@@ -112,7 +112,27 @@ class BookingTimingResource extends Resource
                                     ->required(),
                                 Forms\Components\TimePicker::make('end_time')
                                     ->required(),
-                            ])
+                                    ]),
+                        Block::make('Break Timings')
+                            ->schema([
+                                Forms\Components\Select::make('day')
+                                    ->options([
+                                        'monday' => 'Monday',
+                                        'tuesday' => 'Tuesday',
+                                        'wednesday' => 'Wednesday',
+                                        'thursday' => 'Thursday',
+                                        'friday' => 'Friday',
+                                        'saturday' => 'Saturday',
+                                        'sunday' => 'Sunday',
+                                    ])
+                                    ->required()
+                                    ->multiple()
+                                    ->searchable(),
+                                Forms\Components\TimePicker::make('start_time')
+                                    ->required(),
+                                Forms\Components\TimePicker::make('end_time')
+                                    ->required(),
+                                    ]),
                     ])->columnSpanFull()
                     ->collapsible()
                     ->cloneable() ,
