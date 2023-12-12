@@ -13,7 +13,7 @@ class Booking extends Model
 
     protected $guarded = [];
 
-    public function customer(): BelongsToMany
+    public function customers(): BelongsToMany
     {
         return $this->belongsToMany(Customer::class);
     }

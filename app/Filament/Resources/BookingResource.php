@@ -41,9 +41,11 @@ class BookingResource extends Resource
                     }))
                     ->required()
                     ->searchable(),
-                Forms\Components\Select::make('customer_id')
+                Forms\Components\Select::make('customers')
+                    ->multiple()
                     ->label('Customer')
-                    ->options(Customer::where('company_id', auth()->user()->company_id)->pluck('name', 'id'))
+                    ->relationship('customers', 'name')
+                    ->preload()
                     ->required()
                     ->searchable()
                     ->suffixAction(

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CustomerResource\Pages;
+use App\Filament\Resources\CustomerResource\RelationManagers\BookingsRelationManager;
 use App\Filament\Resources\CustomerResource\RelationManagers\NotificationTypesRelationManager;
 use App\Models\Branch;
 use App\Models\Customer;
@@ -383,6 +384,7 @@ class CustomerResource extends Resource
     {
         return [
             NotificationTypesRelationManager::class,
+            BookingsRelationManager::class
         ];
     }
 
