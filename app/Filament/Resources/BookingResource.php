@@ -11,7 +11,11 @@ use App\Models\Customer;
 use App\Models\NotificationType;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Builder as ComponentsBuilder;
+use Filament\Forms\Components\Builder\Block;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -41,60 +45,76 @@ class BookingResource extends Resource
                     }))
                     ->required()
                     ->searchable(),
-                Forms\Components\Select::make('customers')
-                    ->multiple()
-                    ->label('Customer')
-                    ->relationship('customers', 'name')
-                    ->preload()
-                    ->required()
-                    ->searchable()
-                    ->suffixAction(
-                        Action::make('Create Customer')
-                            ->icon('heroicon-m-user')
-                            ->form([
-                                Forms\Components\TextInput::make('name')
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('email')
-                                    ->email()
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\Select::make('branch_id')
-                                    ->label('Branch')
-                                    ->options(Branch::where('company_id', auth()->user()->company_id)->pluck('name', 'id'))
-                                    ->required()
-                                    ->searchable(),
-                                Forms\Components\Select::make('is_active')
-                                    ->label('Active')
-                                    ->options([
-                                        true => 'Yes',
-                                        false => 'No',
-                                    ])
-                                    ->default(true)
-                                    ->required(),
-                                Forms\Components\Select::make('notifications')
-                                ->options(NotificationType::pluck('name', 'id')->map(function ($name) {
-                                    return ucfirst($name);
-                                }))
+                Forms\Components\TextInput::make('phone')
+                    ->prefix('+91')
+                    ->tel()
+                    ->telRegex('/^[6789]\d{9}$/')
+                    ->required(),
+                DatePicker::make('booking_date')
+                    ->required(),
 
-                                    ->multiple(),
-                            ])
-                            ->action(function (array $data): void {
-                                $customer = Customer::firstOrCreate([
-                                    'name' => $data['name'],
-                                    'email' => $data['email'],
-                                    'branch_id' => $data['branch_id'],
-                                    'is_active' => $data['is_active'],
-                                ]);
-                                if($customer){
-                                    $customer->notificationTypes()->sync($data['notifications']);
-                                }
-                            })
-                    ),
-                DateTimePicker::make('booking_starts_at')
-                    ->seconds(false),
-                DateTimePicker::make('booking_ends_at')
-                    ->seconds(false),
+                ComponentsBuilder::make('members')
+                    ->blocks([
+                        Block::make('male')
+                            ->schema([
+                                Forms\Components\Select::make('gender')
+                                    ->options([
+                                        'male' => 'Male',
+                                        'female' => 'Female',
+                                        'kid' => 'Kid',
+                                    ])
+                                    ->default('male')
+                                    ->disabled()
+                                    ->required(),
+                                TextInput::make('age')
+                                    ->label('Age')
+                                    ->default(25)
+                                    ->required(),
+                                TextInput::make('no_of_slots')
+                                    ->required(),
+                            ]),
+                        Block::make('female')
+                            ->schema([
+                                Forms\Components\Select::make('gender')
+                                    ->options([
+                                        'male' => 'Male',
+                                        'female' => 'Female',
+                                        'kid' => 'Kid',
+                                    ])
+                                    ->default('female')
+                                    ->disabled()
+                                    ->required(),
+                                TextInput::make('age')
+                                    ->label('Age')
+                                    ->default(25)
+                                    ->required(),
+                                TextInput::make('no_of_slots')
+                                    ->required(),
+
+                            ]),
+                        Block::make('kid')
+                            ->schema([
+                                Forms\Components\Select::make('gender')
+                                    ->options([
+                                        'male' => 'Male',
+                                        'female' => 'Female',
+                                        'kid' => 'Kid',
+                                    ])
+                                    ->default('kid')
+                                    ->disabled()
+                                    ->required(),
+                                TextInput::make('age')
+                                    ->label('Age')
+                                    ->default(8)
+                                    ->required(),
+                                TextInput::make('no_of_slots')
+                                    ->required(),
+
+                            ]),
+                    ])->columnSpanFull()
+                    ->collapsible()
+                    ->blockNumbers(false),
+
 
             ]);
     }
