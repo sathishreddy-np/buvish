@@ -57,10 +57,10 @@ class CustomerResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('branch_id')
-                ->label('Branch')
-                ->options(Branch::where('company_id', auth()->user()->company_id)->pluck('name', 'id'))
-                ->required()
-                ->searchable(),
+                    ->label('Branch')
+                    ->options(Branch::where('company_id', auth()->user()->company_id)->pluck('name', 'id'))
+                    ->required()
+                    ->searchable(),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
@@ -73,18 +73,18 @@ class CustomerResource extends Resource
                     ->required()
                     ->searchable(),
                 Forms\Components\TextInput::make('age')
-                ->minValue(1)
-                ->maxValue(100)
+                    ->minValue(1)
+                    ->maxValue(100)
                     ->numeric()
+                    ->required(),
+                Forms\Components\TextInput::make('phone')
+                    ->prefix('+91')
+                    ->tel()
+                    ->telRegex('/^[6789]\d{9}$/')
                     ->required(),
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('phone')
-                    ->prefix('+91')
-                    ->tel()
-                    ->telRegex('^[6789]\d{9}$')
-                    ->required(),
                 Forms\Components\Select::make('is_active')
                     ->label('Active')
                     ->options([
@@ -92,13 +92,16 @@ class CustomerResource extends Resource
                         false => 'No',
                     ])
                     ->default(true)
+                    ->searchable()
                     ->required(),
                 Forms\Components\Select::make('notifications')
+                    ->label('Notifications Opted')
                     ->multiple()
                     ->relationship('notificationTypes', 'name')
                     ->preload()
                     ->hiddenOn('view'),
-            ]);
+            ])
+            ->columns(3);
     }
 
     public static function table(Table $table): Table

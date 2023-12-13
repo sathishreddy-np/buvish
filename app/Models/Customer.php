@@ -13,7 +13,7 @@ class Customer extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $fillable = ['user_id', 'branch_id', 'name', 'email', 'is_active'];
+    protected $guarded = [];
 
     // Show Only User Created Records. You Can Check By Using Role.
     protected static function booted(): void
