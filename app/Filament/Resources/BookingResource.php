@@ -107,9 +107,10 @@ class BookingResource extends Resource
 
                                 }
                                 $booking_date = $get('booking_date');
-                                $booking_count = Booking::where('booking_date',$booking_date)->where('slot',"$start_time - $end_time")->count();
-
-                                if($booking_count){
+                                $booking_count = Booking::where('booking_date',$booking_date)
+                                ->where('slot',"$start_time - $end_time")
+                                ->selectRaw('SUM(JSON_LENGTH(members)) as total_members_count')
+                                ->value('total_members_count');                                if($booking_count){
                                     $slots = (intval($total_slots) - $booking_count)." slots left";
                                     if($slots == "0 slots left"){
                                         continue;
@@ -157,13 +158,16 @@ class BookingResource extends Resource
                                     $total_slots = $timing['data']['no_of_slots'];
                                 }
                                 $booking_date = $get('booking_date');
-                                $booking_count = Booking::where('booking_date',$booking_date)->where('slot',"$start_time - $end_time")->count();
-
+                                $booking_count = Booking::where('booking_date',$booking_date)
+                                ->where('slot',"$start_time - $end_time")
+                                ->selectRaw('SUM(JSON_LENGTH(members)) as total_members_count')
+                                ->value('total_members_count');
                                 if($booking_count){
                                     $slots = intval($total_slots) - $booking_count." slots left";
                                     if($slots == "0 slots left"){
                                         continue;
                                     }
+                                    $no_of_slots = $slots;
                                 }
 
                                 $genders = array_filter(array_column($timing['data']['allowed_genders'], 'gender'));
