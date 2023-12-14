@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignIdFor(Activity::class);
             $table->integer('country_code')->default(91);
             $table->bigInteger('phone');
-            $table->timestamp('booking_date');
+            $table->timestamp('booking_date')->useCurrent(false);
             $table->string('slot');
             $table->json('members');
             $table->softDeletes();
