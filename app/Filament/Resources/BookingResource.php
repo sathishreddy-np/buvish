@@ -217,8 +217,8 @@ class BookingResource extends Resource
                                     [$startTime, $endTime] = explode(' - ', $timeRange);
                                     $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
                                     $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
-                                    $startTime24 = $startTimeObj->format('H:i:s');
-                                    $endTime24 = $endTimeObj->format('H:i:s');
+                                    $startTime24 = $startTimeObj->format('H:i');
+                                    $endTime24 = $endTimeObj->format('H:i');
 
                                     $day = Carbon::parse($get('booking_date'))->dayName;
                                     $day = strtolower($day);
@@ -260,8 +260,8 @@ class BookingResource extends Resource
                                     [$startTime, $endTime] = explode(' - ', $timeRange);
                                     $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
                                     $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
-                                    $startTime24 = $startTimeObj->format('H:i:s');
-                                    $endTime24 = $endTimeObj->format('H:i:s');
+                                    $startTime24 = $startTimeObj->format('H:i');
+                                    $endTime24 = $endTimeObj->format('H:i');
 
                                     $day = Carbon::parse($get('booking_date'))->dayName;
                                     $day = strtolower($day);
@@ -348,8 +348,8 @@ class BookingResource extends Resource
                                     [$startTime, $endTime] = explode(' - ', $timeRange);
                                     $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
                                     $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
-                                    $startTime24 = $startTimeObj->format('H:i:s');
-                                    $endTime24 = $endTimeObj->format('H:i:s');
+                                    $startTime24 = $startTimeObj->format('H:i');
+                                    $endTime24 = $endTimeObj->format('H:i');
 
                                     $day = Carbon::parse($get('booking_date'))->dayName;
                                     $day = strtolower($day);
