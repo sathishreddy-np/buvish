@@ -99,13 +99,28 @@ class BookingResource extends Resource
                             $timings = $booking_timing->timings;
                             $array = [];
                             foreach ($timings as $timing) {
+                                $start_time = date('h:i A', strtotime($timing['data']['start_time']));
+                                $end_time = date('h:i A', strtotime($timing['data']['end_time']));
+                                if (isset($timing['data']['no_of_slots'])) {
+                                    $no_of_slots = $timing['data']['no_of_slots']." slots left";
+                                    $total_slots = $timing['data']['no_of_slots'];
+
+                                }
+                                $booking_date = $get('booking_date');
+                                $booking_count = Booking::where('booking_date',$booking_date)->where('slot',"$start_time - $end_time")->count();
+
+                                if($booking_count){
+                                    $slots = (intval($total_slots) - $booking_count)." slots left";
+                                    if($slots == "0 slots left"){
+                                        continue;
+                                    }
+                                }
+
                                 if ($timing['type'] == 'Opening Timings') {
                                     $days = $timing['data']['day'];
                                     $exists = in_array($day, $days);
                                     if ($exists) {
                                         // $dayZone
-                                        $start_time = date('h:i A', strtotime($timing['data']['start_time']));
-                                        $end_time = date('h:i A', strtotime($timing['data']['end_time']));
                                         array_push($array, $start_time . ' - ' . $end_time);
                                     }
                                 }
@@ -137,16 +152,23 @@ class BookingResource extends Resource
                             if ($timing['type'] == 'Opening Timings' && in_array($day, $timing['data']['day'])) {
                                 $start_time = date('h:i A', strtotime($timing['data']['start_time']));
                                 $end_time = date('h:i A', strtotime($timing['data']['end_time']));
-
-                                $genders = array_filter(array_column($timing['data']['allowed_genders'], 'gender'));
-
-                                $no_of_slots = $timing['data']['no_of_slots']." slots left";
+                                if (isset($timing['data']['no_of_slots'])) {
+                                    $no_of_slots = $timing['data']['no_of_slots']." slots left";
+                                    $total_slots = $timing['data']['no_of_slots'];
+                                }
                                 $booking_date = $get('booking_date');
                                 $booking_count = Booking::where('booking_date',$booking_date)->where('slot',"$start_time - $end_time")->count();
 
                                 if($booking_count){
-                                    $no_of_slots = intval($no_of_slots) - $booking_count." slots left";
+                                    $slots = intval($total_slots) - $booking_count." slots left";
+                                    if($slots == "0 slots left"){
+                                        continue;
+                                    }
                                 }
+
+                                $genders = array_filter(array_column($timing['data']['allowed_genders'], 'gender'));
+
+
 
                                 $combined_array["$start_time - $end_time"] = implode(', ', array_map(function($gender) {
                                     return ucfirst($gender);
