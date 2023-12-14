@@ -142,7 +142,9 @@ class BookingResource extends Resource
 
                                 $no_of_slots = $timing['data']['no_of_slots']." slots left";
 
-                                $combined_array["$start_time - $end_time"] = implode(', ', $genders) . ' - ' . $no_of_slots;
+                                $combined_array["$start_time - $end_time"] = implode(', ', array_map(function($gender) {
+                                    return ucfirst($gender);
+                                }, $genders)) . ' - ' . $no_of_slots;
                             }
                         }
 
