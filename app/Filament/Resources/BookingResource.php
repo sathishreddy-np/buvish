@@ -34,10 +34,10 @@ class BookingResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('phone')
-                ->prefix('+91')
-                ->tel()
-                ->telRegex('/^[6789]\d{9}$/')
-                ->reactive()
+                    ->prefix('+91')
+                    ->tel()
+                    ->telRegex('/^[6789]\d{9}$/')
+                    ->reactive()
                     ->afterStateUpdated(function (callable $set) {
                         return $set('branch_id', null);
                     }),
@@ -50,7 +50,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('activity_id', null);
                     })
-                    ->hidden(fn (Get $get):bool => !$get('phone'))
+                    ->hidden(fn (Get $get): bool => !$get('phone'))
                     ->searchable(),
                 Forms\Components\Select::make('activity_id')
                     ->label('Activity')
@@ -59,7 +59,7 @@ class BookingResource extends Resource
                             $branch_id = $get('branch_id');
                             $branch = Branch::where('id', $branch_id)->first();
                             if ($branch) {
-                                return $branch->activities()->pluck('activities.name','activities.id')->map(function($name){
+                                return $branch->activities()->pluck('activities.name', 'activities.id')->map(function ($name) {
                                     return ucfirst($name);
                                 });
                             }
@@ -71,7 +71,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('booking_date', null);
                     })
-                    ->hidden(fn (Get $get):bool => !$get('branch_id'))
+                    ->hidden(fn (Get $get): bool => !$get('branch_id'))
                     ->searchable(),
                 DatePicker::make('booking_date')
                     ->native(false)
@@ -81,7 +81,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('slot', null);
                     })
-                    ->hidden(fn (Get $get):bool => !$get('activity_id')),
+                    ->hidden(fn (Get $get): bool => !$get('activity_id')),
                 Radio::make('slot')
                     ->options(function (callable $get) {
                         $day = Carbon::parse($get('booking_date'))->dayName;
@@ -309,8 +309,96 @@ class BookingResource extends Resource
                                     }
                                 }
                             )
+                            ->reactive()
+                            ->afterStateUpdated( function (callable $set, callable $get) {
+                                $timeRange = $get('../../slot');
+                                [$startTime, $endTime] = explode(' - ', $timeRange);
+                                $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
+                                $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
+                                $startTime24 = $startTimeObj->format('H:i:s');
+                                $endTime24 = $endTimeObj->format('H:i:s');
+
+                                $day = Carbon::parse($get('booking_date'))->dayName;
+                                $day = strtolower($day);
+                                $branch_id = $get('../../branch_id');
+                                $activity_id = $get('../../activity_id');
+                                $booking_timing = BookingTiming::where('branch_id', $branch_id)
+                                    ->where('activity_id', $activity_id)
+                                    ->first();
+
+                                if ($booking_timing) {
+                                    $timings = $booking_timing->timings;
+                                    foreach ($timings as $timing) {
+                                        if ($timing['type'] == 'Opening Timings') {
+                                            $start_time = $timing['data']['start_time'];
+                                            $end_time = $timing['data']['end_time'];
+
+                                            if ($start_time == $startTime24 && $end_time == $endTime24) {
+                                                $genders = $timing['data']['allowed_genders'];
+                                                foreach ($genders as $gender) {
+                                                    $gen = $gender['gender'];
+                                                    $input_gen = $get('gender');
+                                                    if ($gen == $input_gen) {
+                                                        $amount = $gender['amount'];
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    return $set('amount',$amount);
+                                }
+                            }
+)
                             ->hidden(fn (Get $get): bool => !($get('gender')))
                             ->required(),
+                        TextInput::make('amount')
+                            ->minValue(
+                                function (callable $get) {
+                                    $timeRange = $get('../../slot');
+                                    [$startTime, $endTime] = explode(' - ', $timeRange);
+                                    $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
+                                    $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
+                                    $startTime24 = $startTimeObj->format('H:i:s');
+                                    $endTime24 = $endTimeObj->format('H:i:s');
+
+                                    $day = Carbon::parse($get('booking_date'))->dayName;
+                                    $day = strtolower($day);
+                                    $branch_id = $get('../../branch_id');
+                                    $activity_id = $get('../../activity_id');
+                                    $booking_timing = BookingTiming::where('branch_id', $branch_id)
+                                        ->where('activity_id', $activity_id)
+                                        ->first();
+
+                                    if ($booking_timing) {
+                                        $timings = $booking_timing->timings;
+                                        foreach ($timings as $timing) {
+                                            if ($timing['type'] == 'Opening Timings') {
+                                                $start_time = $timing['data']['start_time'];
+                                                $end_time = $timing['data']['end_time'];
+
+                                                if ($start_time == $startTime24 && $end_time == $endTime24) {
+                                                    $genders = $timing['data']['allowed_genders'];
+                                                    foreach ($genders as $gender) {
+                                                        $gen = $gender['gender'];
+                                                        $input_gen = $get('gender');
+                                                        if ($gen == $input_gen) {
+                                                            $amount = $gender['amount'];
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        return $amount;
+                                    }
+                                }
+                            )
+
+                            ->numeric()
+                            ->required()
+                            ->disabled()
+                            ->hidden(fn (Get $get): bool => !($get('age'))),
 
                     ])
                     ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date') && $get('slot')))
