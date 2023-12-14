@@ -58,9 +58,11 @@ class BookingTimingResource extends Resource
                                     ->multiple()
                                     ->searchable(),
                                 Forms\Components\TimePicker::make('start_time')
-                                    ->required(),
+                                    ->required()
+                                    ->seconds(false),
                                 Forms\Components\TimePicker::make('end_time')
-                                    ->required(),
+                                    ->required()
+                                    ->seconds(false),
                                 Forms\Components\TextInput::make('no_of_slots')
                                     ->required()
                                     ->numeric()
@@ -109,9 +111,11 @@ class BookingTimingResource extends Resource
                                     ->multiple()
                                     ->searchable(),
                                 Forms\Components\TimePicker::make('start_time')
-                                    ->required(),
+                                    ->required()
+                                    ->seconds(false),
                                 Forms\Components\TimePicker::make('end_time')
-                                    ->required(),
+                                    ->required()
+                                    ->seconds(false),
                                     ]),
                         Block::make('Break Timings')
                             ->schema([
@@ -129,9 +133,11 @@ class BookingTimingResource extends Resource
                                     ->multiple()
                                     ->searchable(),
                                 Forms\Components\TimePicker::make('start_time')
-                                    ->required(),
+                                    ->required()
+                                    ->seconds(false),
                                 Forms\Components\TimePicker::make('end_time')
-                                    ->required(),
+                                    ->required()
+                                    ->seconds(false),
                                     ]),
                     ])->columnSpanFull()
                     ->collapsible()
