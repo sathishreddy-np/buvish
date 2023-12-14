@@ -19,6 +19,8 @@ use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -92,120 +94,74 @@ class BookingResource extends Resource
                         }
                     })
                     ->reactive()
-                    // ->afterStateUpdated(function (callable $set) {
-                    //     return $set('members', null);
-                    // })
+                    ->afterStateUpdated(function (callable $set) {
+                        return $set('gender', null);
+                    })
                     ->columnSpanFull()
                     ->columns(3),
 
-                ComponentsBuilder::make('members')
-                    ->blocks(
-                        [
-                            Block::make('male')
-                                ->schema([
-                                    Forms\Components\Select::make('gender')
-                                        ->options(                        function (callable $get) {
-                                            $timeRange = $get('slot');
-                                            // Split the time range into start and end times
-                                            list($startTime, $endTime) = explode(' - ', $timeRange);
+                Repeater::make('members')
+                    ->schema([
+                        Select::make('gender')
+                            ->options(
+                                function (callable $get) {
+                                    $timeRange = $get('../../slot');
+                                    // Split the time range into start and end times
+                                    list($startTime, $endTime) = explode(' - ', $timeRange);
 
-                                            // Create DateTime objects to parse and format the times
-                                            $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
-                                            $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
 
-                                            // Format the times in 24-hour format and store in separate variables
-                                            $startTime24 = $startTimeObj->format('H:i:s');
-                                            $endTime24 = $endTimeObj->format('H:i:s');
+                                    // Create DateTime objects to parse and format the times
+                                    $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
+                                    $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
 
-                                            $day = Carbon::parse($get('booking_date'))->dayName;
-                                            $day = strtolower($day);
-                                            $branch_id = $get('branch_id');
-                                            $activity_id = $get('activity_id');
+                                    // Format the times in 24-hour format and store in separate variables
+                                    $startTime24 = $startTimeObj->format('H:i:s');
+                                    $endTime24 = $endTimeObj->format('H:i:s');
 
-                                            $booking_timing = BookingTiming::where('branch_id', $branch_id)
-                                                ->where('activity_id', $activity_id)
-                                                ->first();
+                                    $day = Carbon::parse($get('booking_date'))->dayName;
+                                    $day = strtolower($day);
+                                    $branch_id = $get('../../branch_id');
+                                    $activity_id = $get('../../activity_id');
+                                    $booking_timing = BookingTiming::where('branch_id', $branch_id)
+                                        ->where('activity_id', $activity_id)
+                                        ->first();
 
-                                            if ($booking_timing) {
-                                                // $timings = json_decode($booking_timing->timings, true);
-                                                $timings = $booking_timing->timings;
-                                                $array = [];
-                                                foreach ($timings as $timing) {
-                                                    if ($timing['type'] == "Opening Timings") {
-                                                        $start_time = $timing['data']['start_time'];
-                                                        $end_time = $timing['data']['end_time'];
+                                    if ($booking_timing) {
+                                        // $timings = json_decode($booking_timing->timings, true);
+                                        $timings = $booking_timing->timings;
+                                        $array = [];
+                                        foreach ($timings as $timing) {
+                                            if ($timing['type'] == "Opening Timings") {
+                                                $start_time = $timing['data']['start_time'];
+                                                $end_time = $timing['data']['end_time'];
 
-                                                        if ($start_time == $startTime24 && $end_time == $endTime24) {
-                                                            $genders = $timing['data']['allowed_genders'];
-                                                            foreach ($genders as $gender) {
-                                                                $gen = $gender['gender'];
-                                                                if ($gen) {
-                                                                    array_push($array, $gen);
-                                                                }
-                                                            }
+                                                if ($start_time == $startTime24 && $end_time == $endTime24) {
+                                                    $genders = $timing['data']['allowed_genders'];
+                                                    foreach ($genders as $gender) {
+                                                        $gen = $gender['gender'];
+                                                        if ($gen) {
+                                                            array_push($array, $gen);
                                                         }
                                                     }
                                                 }
-
-                                                return $array;
                                             }
                                         }
-                )
-                                        ->default('male')
-                                        ->disabled()
-                                        ->required(),
-                                    TextInput::make('age')
-                                        ->label('Age')
-                                        ->default(25)
-                                        ->required(),
-                                    TextInput::make('no_of_slots')
-                                        ->required(),
-                                ]),
-                            Block::make('female')
-                                ->schema([
-                                    Forms\Components\Select::make('gender')
-                                        ->options([
-                                            'male' => 'Male',
-                                            'female' => 'Female',
-                                            'kid' => 'Kid',
-                                        ])
-                                        ->default('female')
-                                        ->disabled()
-                                        ->required(),
-                                    TextInput::make('age')
-                                        ->label('Age')
-                                        ->default(25)
-                                        ->required(),
-                                    TextInput::make('no_of_slots')
-                                        ->required(),
 
-                                ]),
-                            Block::make('kid')
-                                ->schema([
-                                    Forms\Components\Select::make('gender')
-                                        ->options([
-                                            'male' => 'Male',
-                                            'female' => 'Female',
-                                            'kid' => 'Kid',
-                                        ])
-                                        ->default('kid')
-                                        ->disabled()
-                                        ->required(),
-                                    TextInput::make('age')
-                                        ->label('Age')
-                                        ->default(8)
-                                        ->required(),
-                                    TextInput::make('no_of_slots')
-                                        ->required(),
+                                        $array_combine = array_combine($array,array_map(fn($value) => ucfirst($value), $array));
+                                        return $array_combine;
+                                    }
+                                }
+                            )
+                            ->searchable()
+                            ->required(),
 
-                                ]),
-                        ]
+                        TextInput::make('age')->required(),
+                        TextInput::make('no_of slots')->required(),
 
-
-                    )->columnSpanFull()
-                    ->collapsible()
-                    ->blockNumbers(false),
-
+                    ])
+                    ->defaultItems(0)
+                    ->minItems(1)
+                    ->columns(2)
 
             ]);
     }
