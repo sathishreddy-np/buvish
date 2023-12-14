@@ -15,11 +15,13 @@ class Activity extends Model
 
     protected $guarded = [];
 
-    public function branches() : BelongsToMany {
+    public function branches(): BelongsToMany
+    {
         return $this->belongsToMany(Branch::class);
     }
 
-    public function company() : BelongsTo {
+    public function company(): BelongsTo
+    {
         return $this->belongsTo(Company::class);
     }
 

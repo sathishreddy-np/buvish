@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\BookingTimingResource\Pages;
-use App\Filament\Resources\BookingTimingResource\RelationManagers;
 use App\Models\Activity;
 use App\Models\BookingTiming;
 use App\Models\Branch;
@@ -116,7 +115,7 @@ class BookingTimingResource extends Resource
                                 Forms\Components\TimePicker::make('end_time')
                                     ->required()
                                     ->seconds(false),
-                                    ]),
+                            ]),
                         Block::make('Break Timings')
                             ->schema([
                                 Forms\Components\Select::make('day')
@@ -138,10 +137,10 @@ class BookingTimingResource extends Resource
                                 Forms\Components\TimePicker::make('end_time')
                                     ->required()
                                     ->seconds(false),
-                                    ]),
+                            ]),
                     ])->columnSpanFull()
                     ->collapsible()
-                    ->cloneable() ,
+                    ->cloneable(),
             ]);
     }
 

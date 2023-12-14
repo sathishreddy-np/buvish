@@ -48,7 +48,7 @@ class CustomerResource extends Resource
         return [
             'Name' => $record->name,
             'Email' => $record->email,
-            'Phone' => $record->country_code . " - " . $record->phone,
+            'Phone' => $record->country_code.' - '.$record->phone,
         ];
     }
 
@@ -140,7 +140,7 @@ class CustomerResource extends Resource
                         if ($notificationTypes) {
                             return $notificationTypes;
                         }
-                        if (!$notificationTypes) {
+                        if (! $notificationTypes) {
                             return 'NA';
                         }
                     }),
@@ -418,7 +418,7 @@ class CustomerResource extends Resource
     {
         return [
             NotificationTypesRelationManager::class,
-            BookingsRelationManager::class
+            BookingsRelationManager::class,
         ];
     }
 

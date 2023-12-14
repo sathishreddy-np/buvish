@@ -15,11 +15,13 @@ class BookingTiming extends Model
 
     protected $casts = ['timings' => 'json'];
 
-    public function branch() : BelongsTo {
+    public function branch(): BelongsTo
+    {
         return $this->belongsTo(Branch::class);
     }
 
-    public function activity() : BelongsTo {
+    public function activity(): BelongsTo
+    {
         return $this->belongsTo(Activity::class);
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\NotificationTypeResource\Pages;
-use App\Models\Branch;
 use App\Models\NotificationType;
 use Filament\Forms;
 use Filament\Forms\Form;

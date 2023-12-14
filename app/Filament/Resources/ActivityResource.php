@@ -3,9 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ActivityResource\Pages;
-use App\Filament\Resources\ActivityResource\RelationManagers;
 use App\Models\Activity;
-use App\Models\Branch;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
@@ -29,8 +27,8 @@ class ActivityResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Hidden::make('company_id')
-                ->default(auth()->user()->company_id)
-                ->required(),
+                    ->default(auth()->user()->company_id)
+                    ->required(),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->dehydrateStateUsing(fn (string $state): string => strtolower($state))
@@ -62,50 +60,50 @@ class ActivityResource extends Resource
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
                 Filter::make('created_at')
-                ->form([
-                    DatePicker::make('created_from'),
-                    DatePicker::make('created_until'),
-                ])
-                ->query(function (Builder $query, array $data): Builder {
-                    return $query
-                        ->when(
-                            $data['created_from'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                        )
-                        ->when(
-                            $data['created_until'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                        );
-                }),
-            Filter::make('updated_at')
-                ->form([
-                    DatePicker::make('updated_from'),
-                    DatePicker::make('updated_until'),
-                ])
-                ->query(function (Builder $query, array $data): Builder {
-                    return $query
-                        ->when(
-                            $data['updated_from'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '>=', $date),
-                        )
-                        ->when(
-                            $data['updated_until'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '<=', $date),
-                        );
-                }),
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
+                Filter::make('updated_at')
+                    ->form([
+                        DatePicker::make('updated_from'),
+                        DatePicker::make('updated_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['updated_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['updated_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '<=', $date),
+                            );
+                    }),
 
-        ], layout: FiltersLayout::AboveContentCollapsible)
+            ], layout: FiltersLayout::AboveContentCollapsible)
             ->actions([
                 ActionGroup::make([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
                 ])
-                ->icon('heroicon-m-ellipsis-horizontal')
-                ->tooltip('Actions'),
-                ])
+                    ->icon('heroicon-m-ellipsis-horizontal')
+                    ->tooltip('Actions'),
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

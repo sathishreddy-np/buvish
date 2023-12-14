@@ -12,8 +12,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class BookingTimingsRelationManager extends RelationManager
 {
@@ -107,12 +105,12 @@ class BookingTimingsRelationManager extends RelationManager
                                     ->required(),
                                 Forms\Components\TimePicker::make('end_time')
                                     ->required(),
-                            ])
+                            ]),
                     ])->columnSpanFull()
                     ->collapsible()
-                    ->cloneable() ,
+                    ->cloneable(),
             ]);
-        }
+    }
 
     public function table(Table $table): Table
     {

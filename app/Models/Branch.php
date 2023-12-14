@@ -25,11 +25,13 @@ class Branch extends Model
         return $this->hasMany(Customer::class);
     }
 
-    public function activities() : BelongsToMany {
+    public function activities(): BelongsToMany
+    {
         return $this->belongsToMany(Activity::class);
     }
 
-    public function bookingTimings() : HasMany {
+    public function bookingTimings(): HasMany
+    {
         return $this->hasMany(BookingTiming::class);
     }
 }

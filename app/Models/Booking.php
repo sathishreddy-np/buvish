@@ -17,6 +17,4 @@ class Booking extends Model
     {
         return $this->belongsToMany(Customer::class);
     }
-
-
 }

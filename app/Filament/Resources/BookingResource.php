@@ -3,21 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\BookingResource\Pages;
-use App\Filament\Resources\BookingResource\RelationManagers;
 use App\Models\Activity;
 use App\Models\Booking;
 use App\Models\BookingTiming;
 use App\Models\Branch;
-use App\Models\Customer;
-use App\Models\NotificationType;
 use Carbon\Carbon;
 use DateTime;
 use Filament\Forms;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\Builder as ComponentsBuilder;
-use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -55,11 +48,10 @@ class BookingResource extends Resource
                 Forms\Components\TextInput::make('phone')
                     ->prefix('+91')
                     ->tel()
-                    ->telRegex('/^[6789]\d{9}$/')
-                    ->required(),
+                    ->telRegex('/^[6789]\d{9}$/'),
                 DatePicker::make('booking_date')
                     ->native(false)
-                    ->minDate(now())
+                    ->minDate(today())
                     ->required()
                     ->reactive()
                     ->afterStateUpdated(function (callable $set) {
@@ -81,19 +73,20 @@ class BookingResource extends Resource
                             $timings = $booking_timing->timings;
                             $array = [];
                             foreach ($timings as $timing) {
-                                if ($timing['type'] == "Opening Timings") {
+                                if ($timing['type'] == 'Opening Timings') {
                                     $days = $timing['data']['day'];
                                     $exists = in_array($day, $days);
                                     if ($exists) {
                                         // $dayZone
-                                        $start_time = date("h:i:s A", strtotime($timing['data']['start_time']));
-                                        $end_time = date("h:i:s A", strtotime($timing['data']['end_time']));
-                                        array_push($array, $start_time . " - " . $end_time);
+                                        $start_time = date('h:i:s A', strtotime($timing['data']['start_time']));
+                                        $end_time = date('h:i:s A', strtotime($timing['data']['end_time']));
+                                        array_push($array, $start_time.' - '.$end_time);
                                     }
                                 }
                             }
 
                             $combined_array = array_combine($array, $array);
+
                             return $combined_array;
                         }
                     })
@@ -113,13 +106,13 @@ class BookingResource extends Resource
                             $array_1 = [];
                             $array_3 = [];
                             foreach ($timings as $timing) {
-                                if ($timing['type'] == "Opening Timings") {
+                                if ($timing['type'] == 'Opening Timings') {
                                     $days = $timing['data']['day'];
                                     $exists = in_array($day, $days);
                                     if ($exists) {
-                                        $start_time = date("h:i:s A", strtotime($timing['data']['start_time']));
-                                        $end_time = date("h:i:s A", strtotime($timing['data']['end_time']));
-                                        array_push($array_1, $start_time . " - " . $end_time);
+                                        $start_time = date('h:i:s A', strtotime($timing['data']['start_time']));
+                                        $end_time = date('h:i:s A', strtotime($timing['data']['end_time']));
+                                        array_push($array_1, $start_time.' - '.$end_time);
                                         $genders = $timing['data']['allowed_genders'];
                                         $array_2 = [];
                                         foreach ($genders as $gender) {
@@ -128,8 +121,7 @@ class BookingResource extends Resource
                                                 array_push($array_2, $gen);
                                             }
                                         }
-                                        array_push($array_3,$array_2);
-
+                                        array_push($array_3, $array_2);
                                     }
                                 }
                             }
@@ -137,6 +129,7 @@ class BookingResource extends Resource
                             $combined_array_as_strings = array_map(function ($value) {
                                 return implode(', ', $value);
                             }, $combined_array);
+
                             return $combined_array_as_strings;
                         }
                     })
@@ -144,7 +137,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('gender', null);
                     })
-                    ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date')))
+                    ->hidden(fn (Get $get): bool => ! ($get('branch_id') && $get('activity_id') && $get('booking_date')))
                     ->required()
                     ->columnSpanFull()
                     ->columns(3),
@@ -155,7 +148,7 @@ class BookingResource extends Resource
                             ->options(
                                 function (callable $get) {
                                     $timeRange = $get('../../slot');
-                                    list($startTime, $endTime) = explode(' - ', $timeRange);
+                                    [$startTime, $endTime] = explode(' - ', $timeRange);
                                     $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
                                     $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
                                     $startTime24 = $startTimeObj->format('H:i:s');
@@ -173,7 +166,7 @@ class BookingResource extends Resource
                                         $timings = $booking_timing->timings;
                                         $array = [];
                                         foreach ($timings as $timing) {
-                                            if ($timing['type'] == "Opening Timings") {
+                                            if ($timing['type'] == 'Opening Timings') {
                                                 $start_time = $timing['data']['start_time'];
                                                 $end_time = $timing['data']['end_time'];
 
@@ -190,21 +183,115 @@ class BookingResource extends Resource
                                         }
 
                                         $array_combine = array_combine($array, array_map(fn ($value) => ucfirst($value), $array));
+
                                         return $array_combine;
                                     }
                                 }
                             )
                             ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set) {
+                                return $set('age', null);
+                            })
                             ->required(),
 
-                        TextInput::make('age')->required(),
-                        TextInput::make('no_of slots')->required(),
+                        TextInput::make('age')
+                            ->numeric()
+                            ->minValue(
+                                function (callable $get) {
+                                    $timeRange = $get('../../slot');
+                                    [$startTime, $endTime] = explode(' - ', $timeRange);
+                                    $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
+                                    $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
+                                    $startTime24 = $startTimeObj->format('H:i:s');
+                                    $endTime24 = $endTimeObj->format('H:i:s');
+
+                                    $day = Carbon::parse($get('booking_date'))->dayName;
+                                    $day = strtolower($day);
+                                    $branch_id = $get('../../branch_id');
+                                    $activity_id = $get('../../activity_id');
+                                    $booking_timing = BookingTiming::where('branch_id', $branch_id)
+                                        ->where('activity_id', $activity_id)
+                                        ->first();
+
+                                    if ($booking_timing) {
+                                        $timings = $booking_timing->timings;
+                                        foreach ($timings as $timing) {
+                                            if ($timing['type'] == 'Opening Timings') {
+                                                $start_time = $timing['data']['start_time'];
+                                                $end_time = $timing['data']['end_time'];
+
+                                                if ($start_time == $startTime24 && $end_time == $endTime24) {
+                                                    $genders = $timing['data']['allowed_genders'];
+                                                    foreach ($genders as $gender) {
+                                                        $gen = $gender['gender'];
+                                                        $input_gen = $get('gender');
+                                                        // dd($gen);
+                                                        // dump($input_gen);
+                                                        if ($gen == $input_gen) {
+                                                            $min_value = $gender['age_from'];
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        return $min_value;
+                                    }
+                                }
+                            )
+                            ->maxValue(
+                                function (callable $get) {
+                                    $timeRange = $get('../../slot');
+                                    [$startTime, $endTime] = explode(' - ', $timeRange);
+                                    $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
+                                    $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
+                                    $startTime24 = $startTimeObj->format('H:i:s');
+                                    $endTime24 = $endTimeObj->format('H:i:s');
+
+                                    $day = Carbon::parse($get('booking_date'))->dayName;
+                                    $day = strtolower($day);
+                                    $branch_id = $get('../../branch_id');
+                                    $activity_id = $get('../../activity_id');
+                                    $booking_timing = BookingTiming::where('branch_id', $branch_id)
+                                        ->where('activity_id', $activity_id)
+                                        ->first();
+
+                                    if ($booking_timing) {
+                                        $timings = $booking_timing->timings;
+                                        foreach ($timings as $timing) {
+                                            if ($timing['type'] == 'Opening Timings') {
+                                                $start_time = $timing['data']['start_time'];
+                                                $end_time = $timing['data']['end_time'];
+
+                                                if ($start_time == $startTime24 && $end_time == $endTime24) {
+                                                    $genders = $timing['data']['allowed_genders'];
+                                                    foreach ($genders as $gender) {
+                                                        $gen = $gender['gender'];
+                                                        $input_gen = $get('gender');
+                                                        // dump($gen);
+                                                        // dd($input_gen);
+                                                        if ($gen == $input_gen) {
+                                                            $max_value = $gender['age_to'];
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        return $max_value;
+                                    }
+                                }
+                            )
+                            ->hidden(fn (Get $get): bool => ! ($get('gender')))
+                            ->required(),
+                        TextInput::make('no_of slots')->numeric()->required(),
 
                     ])
-                    ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date')))
+                    ->hidden(fn (Get $get): bool => ! ($get('branch_id') && $get('activity_id') && $get('booking_date') && $get('slot')))
                     ->defaultItems(0)
                     ->minItems(1)
-                    ->columns(2)
+                    ->columns(2),
 
             ]);
     }
