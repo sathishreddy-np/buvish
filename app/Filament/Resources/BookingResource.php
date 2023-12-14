@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\BookingResource\Pages;
-use App\Models\Activity;
 use App\Models\Booking;
 use App\Models\BookingTiming;
 use App\Models\Branch;
@@ -50,7 +49,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('activity_id', null);
                     })
-                    ->hidden(fn (Get $get): bool => !$get('phone'))
+                    ->hidden(fn (Get $get): bool => ! $get('phone'))
                     ->searchable(),
                 Forms\Components\Select::make('activity_id')
                     ->label('Activity')
@@ -71,7 +70,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('booking_date', null);
                     })
-                    ->hidden(fn (Get $get): bool => !$get('branch_id'))
+                    ->hidden(fn (Get $get): bool => ! $get('branch_id'))
                     ->searchable(),
                 DatePicker::make('booking_date')
                     ->native(false)
@@ -81,7 +80,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('slot', null);
                     })
-                    ->hidden(fn (Get $get): bool => !$get('activity_id')),
+                    ->hidden(fn (Get $get): bool => ! $get('activity_id')),
                 Radio::make('slot')
                     ->options(function (callable $get) {
                         $day = Carbon::parse($get('booking_date'))->dayName;
@@ -105,7 +104,7 @@ class BookingResource extends Resource
                                         // $dayZone
                                         $start_time = date('h:i:s A', strtotime($timing['data']['start_time']));
                                         $end_time = date('h:i:s A', strtotime($timing['data']['end_time']));
-                                        array_push($array, $start_time . ' - ' . $end_time);
+                                        array_push($array, $start_time.' - '.$end_time);
                                     }
                                 }
                             }
@@ -137,7 +136,7 @@ class BookingResource extends Resource
                                     if ($exists) {
                                         $start_time = date('h:i:s A', strtotime($timing['data']['start_time']));
                                         $end_time = date('h:i:s A', strtotime($timing['data']['end_time']));
-                                        array_push($array_1, $start_time . ' - ' . $end_time);
+                                        array_push($array_1, $start_time.' - '.$end_time);
                                         $genders = $timing['data']['allowed_genders'];
                                         $array_2 = [];
                                         foreach ($genders as $gender) {
@@ -162,7 +161,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('gender', null);
                     })
-                    ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date')))
+                    ->hidden(fn (Get $get): bool => ! ($get('branch_id') && $get('activity_id') && $get('booking_date')))
                     ->required()
                     ->columnSpanFull()
                     ->columns(3),
@@ -310,7 +309,7 @@ class BookingResource extends Resource
                                 }
                             )
                             ->reactive()
-                            ->afterStateUpdated( function (callable $set, callable $get) {
+                            ->afterStateUpdated(function (callable $set, callable $get) {
                                 $timeRange = $get('../../slot');
                                 [$startTime, $endTime] = explode(' - ', $timeRange);
                                 $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
@@ -346,11 +345,11 @@ class BookingResource extends Resource
                                         }
                                     }
 
-                                    return $set('amount',$amount);
+                                    return $set('amount', $amount);
                                 }
                             }
-)
-                            ->hidden(fn (Get $get): bool => !($get('gender')))
+                            )
+                            ->hidden(fn (Get $get): bool => ! ($get('gender')))
                             ->required(),
                         TextInput::make('amount')
                             ->minValue(
@@ -398,10 +397,10 @@ class BookingResource extends Resource
                             ->numeric()
                             ->required()
                             ->disabled()
-                            ->hidden(fn (Get $get): bool => !($get('age'))),
+                            ->hidden(fn (Get $get): bool => ! ($get('age'))),
 
                     ])
-                    ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date') && $get('slot')))
+                    ->hidden(fn (Get $get): bool => ! ($get('branch_id') && $get('activity_id') && $get('booking_date') && $get('slot')))
                     ->defaultItems(0)
                     ->minItems(1)
                     ->columnSpanFull()
