@@ -33,22 +33,46 @@ class BookingResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('phone')
+                ->prefix('+91')
+                ->tel()
+                ->telRegex('/^[6789]\d{9}$/')
+                ->reactive()
+                    ->afterStateUpdated(function (callable $set) {
+                        return $set('branch_id', null);
+                    }),
+
                 Forms\Components\Select::make('branch_id')
                     ->label('Branch')
                     ->options(Branch::where('company_id', auth()->user()->company_id)->pluck('name', 'id'))
                     ->required()
+                    ->reactive()
+                    ->afterStateUpdated(function (callable $set) {
+                        return $set('activity_id', null);
+                    })
+                    ->hidden(fn (Get $get):bool => !$get('phone'))
                     ->searchable(),
                 Forms\Components\Select::make('activity_id')
                     ->label('Activity')
-                    ->options(Activity::where('company_id', auth()->user()->company_id)->pluck('name', 'id')->map(function ($name) {
-                        return ucfirst($name);
-                    }))
+                    ->options(
+                        function (callable $get) {
+                            $branch_id = $get('branch_id');
+                            $branch = Branch::where('id', $branch_id)->first();
+                            if ($branch) {
+                                return $branch->activities()->pluck('activities.name','activities.id')->map(function($name){
+                                    return ucfirst($name);
+                                });
+                            }
+                        }
+
+                    )
                     ->required()
+                    ->reactive()
+                    ->afterStateUpdated(function (callable $set) {
+                        return $set('booking_date', null);
+                    })
+                    ->hidden(fn (Get $get):bool => !$get('branch_id'))
                     ->searchable(),
-                Forms\Components\TextInput::make('phone')
-                    ->prefix('+91')
-                    ->tel()
-                    ->telRegex('/^[6789]\d{9}$/'),
                 DatePicker::make('booking_date')
                     ->native(false)
                     ->minDate(today())
@@ -56,7 +80,8 @@ class BookingResource extends Resource
                     ->reactive()
                     ->afterStateUpdated(function (callable $set) {
                         return $set('slot', null);
-                    }),
+                    })
+                    ->hidden(fn (Get $get):bool => !$get('activity_id')),
                 Radio::make('slot')
                     ->options(function (callable $get) {
                         $day = Carbon::parse($get('booking_date'))->dayName;
@@ -80,7 +105,7 @@ class BookingResource extends Resource
                                         // $dayZone
                                         $start_time = date('h:i:s A', strtotime($timing['data']['start_time']));
                                         $end_time = date('h:i:s A', strtotime($timing['data']['end_time']));
-                                        array_push($array, $start_time.' - '.$end_time);
+                                        array_push($array, $start_time . ' - ' . $end_time);
                                     }
                                 }
                             }
@@ -112,7 +137,7 @@ class BookingResource extends Resource
                                     if ($exists) {
                                         $start_time = date('h:i:s A', strtotime($timing['data']['start_time']));
                                         $end_time = date('h:i:s A', strtotime($timing['data']['end_time']));
-                                        array_push($array_1, $start_time.' - '.$end_time);
+                                        array_push($array_1, $start_time . ' - ' . $end_time);
                                         $genders = $timing['data']['allowed_genders'];
                                         $array_2 = [];
                                         foreach ($genders as $gender) {
@@ -137,13 +162,14 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('gender', null);
                     })
-                    ->hidden(fn (Get $get): bool => ! ($get('branch_id') && $get('activity_id') && $get('booking_date')))
+                    ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date')))
                     ->required()
                     ->columnSpanFull()
                     ->columns(3),
 
                 Repeater::make('members')
                     ->schema([
+                        TextInput::make('Name'),
                         Select::make('gender')
                             ->options(
                                 function (callable $get) {
@@ -283,15 +309,17 @@ class BookingResource extends Resource
                                     }
                                 }
                             )
-                            ->hidden(fn (Get $get): bool => ! ($get('gender')))
+                            ->hidden(fn (Get $get): bool => !($get('gender')))
                             ->required(),
-                        TextInput::make('no_of slots')->numeric()->required(),
 
                     ])
-                    ->hidden(fn (Get $get): bool => ! ($get('branch_id') && $get('activity_id') && $get('booking_date') && $get('slot')))
+                    ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date') && $get('slot')))
                     ->defaultItems(0)
                     ->minItems(1)
-                    ->columns(2),
+                    ->columnSpanFull()
+                    ->columns(3)
+                    ->collapsible()
+                    ->cloneable(),
 
             ]);
     }
