@@ -23,6 +23,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -57,6 +58,8 @@ class BookingResource extends Resource
                     ->telRegex('/^[6789]\d{9}$/')
                     ->required(),
                 DatePicker::make('booking_date')
+                    ->native(false)
+                    ->minDate(now())
                     ->required()
                     ->reactive()
                     ->afterStateUpdated(function (callable $set) {
@@ -89,14 +92,60 @@ class BookingResource extends Resource
                                     }
                                 }
                             }
+
                             $combined_array = array_combine($array, $array);
                             return $combined_array;
+                        }
+                    })
+                    ->descriptions(function (callable $get) {
+                        $day = Carbon::parse($get('booking_date'))->dayName;
+                        $day = strtolower($day);
+                        $branch_id = $get('branch_id');
+                        $activity_id = $get('activity_id');
+
+                        $booking_timing = BookingTiming::where('branch_id', $branch_id)
+                            ->where('activity_id', $activity_id)
+                            ->first();
+
+                        if ($booking_timing) {
+                            // $timings = json_decode($booking_timing->timings, true);
+                            $timings = $booking_timing->timings;
+                            $array_1 = [];
+                            $array_3 = [];
+                            foreach ($timings as $timing) {
+                                if ($timing['type'] == "Opening Timings") {
+                                    $days = $timing['data']['day'];
+                                    $exists = in_array($day, $days);
+                                    if ($exists) {
+                                        $start_time = date("h:i:s A", strtotime($timing['data']['start_time']));
+                                        $end_time = date("h:i:s A", strtotime($timing['data']['end_time']));
+                                        array_push($array_1, $start_time . " - " . $end_time);
+                                        $genders = $timing['data']['allowed_genders'];
+                                        $array_2 = [];
+                                        foreach ($genders as $gender) {
+                                            $gen = $gender['gender'];
+                                            if ($gen) {
+                                                array_push($array_2, $gen);
+                                            }
+                                        }
+                                        array_push($array_3,$array_2);
+
+                                    }
+                                }
+                            }
+                            $combined_array = array_combine($array_1, $array_3);
+                            $combined_array_as_strings = array_map(function ($value) {
+                                return implode(', ', $value);
+                            }, $combined_array);
+                            return $combined_array_as_strings;
                         }
                     })
                     ->reactive()
                     ->afterStateUpdated(function (callable $set) {
                         return $set('gender', null);
                     })
+                    ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date')))
+                    ->required()
                     ->columnSpanFull()
                     ->columns(3),
 
@@ -106,15 +155,9 @@ class BookingResource extends Resource
                             ->options(
                                 function (callable $get) {
                                     $timeRange = $get('../../slot');
-                                    // Split the time range into start and end times
                                     list($startTime, $endTime) = explode(' - ', $timeRange);
-
-
-                                    // Create DateTime objects to parse and format the times
                                     $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
                                     $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
-
-                                    // Format the times in 24-hour format and store in separate variables
                                     $startTime24 = $startTimeObj->format('H:i:s');
                                     $endTime24 = $endTimeObj->format('H:i:s');
 
@@ -127,7 +170,6 @@ class BookingResource extends Resource
                                         ->first();
 
                                     if ($booking_timing) {
-                                        // $timings = json_decode($booking_timing->timings, true);
                                         $timings = $booking_timing->timings;
                                         $array = [];
                                         foreach ($timings as $timing) {
@@ -147,7 +189,7 @@ class BookingResource extends Resource
                                             }
                                         }
 
-                                        $array_combine = array_combine($array,array_map(fn($value) => ucfirst($value), $array));
+                                        $array_combine = array_combine($array, array_map(fn ($value) => ucfirst($value), $array));
                                         return $array_combine;
                                     }
                                 }
@@ -159,6 +201,7 @@ class BookingResource extends Resource
                         TextInput::make('no_of slots')->required(),
 
                     ])
+                    ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date')))
                     ->defaultItems(0)
                     ->minItems(1)
                     ->columns(2)
