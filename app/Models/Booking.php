@@ -13,6 +13,8 @@ class Booking extends Model
 
     protected $guarded = [];
 
+    protected $casts = [ 'members' => 'json'];
+
     public function customers(): BelongsToMany
     {
         return $this->belongsToMany(Customer::class);

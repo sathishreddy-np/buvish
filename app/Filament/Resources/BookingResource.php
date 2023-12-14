@@ -76,6 +76,7 @@ class BookingResource extends Resource
                     ->native(false)
                     ->minDate(today())
                     ->required()
+                    ->closeOnDateSelection()
                     ->displayFormat('d-M-Y')
                     ->reactive()
                     ->afterStateUpdated(function (callable $set) {
@@ -103,8 +104,8 @@ class BookingResource extends Resource
                                     $exists = in_array($day, $days);
                                     if ($exists) {
                                         // $dayZone
-                                        $start_time = date('h:i:s A', strtotime($timing['data']['start_time']));
-                                        $end_time = date('h:i:s A', strtotime($timing['data']['end_time']));
+                                        $start_time = date('h:i A', strtotime($timing['data']['start_time']));
+                                        $end_time = date('h:i A', strtotime($timing['data']['end_time']));
                                         array_push($array, $start_time . ' - ' . $end_time);
                                     }
                                 }
@@ -134,8 +135,8 @@ class BookingResource extends Resource
 
                         foreach ($timings as $timing) {
                             if ($timing['type'] == 'Opening Timings' && in_array($day, $timing['data']['day'])) {
-                                $start_time = date('h:i:s A', strtotime($timing['data']['start_time']));
-                                $end_time = date('h:i:s A', strtotime($timing['data']['end_time']));
+                                $start_time = date('h:i A', strtotime($timing['data']['start_time']));
+                                $end_time = date('h:i A', strtotime($timing['data']['end_time']));
 
                                 $genders = array_filter(array_column($timing['data']['allowed_genders'], 'gender'));
 
@@ -165,8 +166,8 @@ class BookingResource extends Resource
                                 function (callable $get) {
                                     $timeRange = $get('../../slot');
                                     [$startTime, $endTime] = explode(' - ', $timeRange);
-                                    $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
-                                    $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
+                                    $startTimeObj = DateTime::createFromFormat('h:i A', $startTime);
+                                    $endTimeObj = DateTime::createFromFormat('h:i A', $endTime);
                                     $startTime24 = $startTimeObj->format('H:i');
                                     $endTime24 = $endTimeObj->format('H:i');
 
@@ -215,8 +216,8 @@ class BookingResource extends Resource
                                 function (callable $get) {
                                     $timeRange = $get('../../slot');
                                     [$startTime, $endTime] = explode(' - ', $timeRange);
-                                    $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
-                                    $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
+                                    $startTimeObj = DateTime::createFromFormat('h:i A', $startTime);
+                                    $endTimeObj = DateTime::createFromFormat('h:i A', $endTime);
                                     $startTime24 = $startTimeObj->format('H:i');
                                     $endTime24 = $endTimeObj->format('H:i');
 
@@ -258,8 +259,8 @@ class BookingResource extends Resource
                                 function (callable $get) {
                                     $timeRange = $get('../../slot');
                                     [$startTime, $endTime] = explode(' - ', $timeRange);
-                                    $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
-                                    $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
+                                    $startTimeObj = DateTime::createFromFormat('h:i A', $startTime);
+                                    $endTimeObj = DateTime::createFromFormat('h:i A', $endTime);
                                     $startTime24 = $startTimeObj->format('H:i');
                                     $endTime24 = $endTimeObj->format('H:i');
 
@@ -302,8 +303,8 @@ class BookingResource extends Resource
                                 function (callable $set, callable $get) {
                                     $timeRange = $get('../../slot');
                                     [$startTime, $endTime] = explode(' - ', $timeRange);
-                                    $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
-                                    $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
+                                    $startTimeObj = DateTime::createFromFormat('h:i A', $startTime);
+                                    $endTimeObj = DateTime::createFromFormat('h:i A', $endTime);
                                     $startTime24 = $startTimeObj->format('H:i');
                                     $endTime24 = $endTimeObj->format('H:i');
 
@@ -342,12 +343,52 @@ class BookingResource extends Resource
                             ->hidden(fn (Get $get): bool => !($get('gender')))
                             ->required(),
                         TextInput::make('amount')
+                        ->default(                                function (callable $set, callable $get) {
+                            $timeRange = $get('../../slot');
+                            [$startTime, $endTime] = explode(' - ', $timeRange);
+                            $startTimeObj = DateTime::createFromFormat('h:i A', $startTime);
+                            $endTimeObj = DateTime::createFromFormat('h:i A', $endTime);
+                            $startTime24 = $startTimeObj->format('H:i');
+                            $endTime24 = $endTimeObj->format('H:i');
+
+                            $day = Carbon::parse($get('booking_date'))->dayName;
+                            $day = strtolower($day);
+                            $branch_id = $get('../../branch_id');
+                            $activity_id = $get('../../activity_id');
+                            $booking_timing = BookingTiming::where('branch_id', $branch_id)
+                                ->where('activity_id', $activity_id)
+                                ->first();
+
+                            if ($booking_timing) {
+                                $timings = $booking_timing->timings;
+                                foreach ($timings as $timing) {
+                                    if ($timing['type'] == 'Opening Timings') {
+                                        $start_time = $timing['data']['start_time'];
+                                        $end_time = $timing['data']['end_time'];
+
+                                        if ($start_time == $startTime24 && $end_time == $endTime24) {
+                                            $genders = $timing['data']['allowed_genders'];
+                                            foreach ($genders as $gender) {
+                                                $gen = $gender['gender'];
+                                                $input_gen = $get('gender');
+                                                if ($gen == $input_gen) {
+                                                    $amount = $gender['amount'];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                return $amount;
+                            }
+                        }
+)
                             ->minValue(
                                 function (callable $get) {
                                     $timeRange = $get('../../slot');
                                     [$startTime, $endTime] = explode(' - ', $timeRange);
-                                    $startTimeObj = DateTime::createFromFormat('h:i:s A', $startTime);
-                                    $endTimeObj = DateTime::createFromFormat('h:i:s A', $endTime);
+                                    $startTimeObj = DateTime::createFromFormat('h:i A', $startTime);
+                                    $endTimeObj = DateTime::createFromFormat('h:i A', $endTime);
                                     $startTime24 = $startTimeObj->format('H:i');
                                     $endTime24 = $endTimeObj->format('H:i');
 
@@ -383,10 +424,8 @@ class BookingResource extends Resource
                                     }
                                 }
                             )
-
                             ->numeric()
                             ->required()
-                            ->disabled()
                             ->hidden(fn (Get $get): bool => !($get('age'))),
 
                     ])
@@ -394,7 +433,7 @@ class BookingResource extends Resource
                     ->defaultItems(0)
                     ->minItems(1)
                     ->columnSpanFull()
-                    ->columns(3)
+                    ->columns(4)
                     ->collapsible()
                     ->cloneable(),
 

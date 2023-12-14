@@ -17,8 +17,11 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Branch::class);
             $table->foreignIdFor(Activity::class);
-            $table->timestamp('booking_starts_at');
-            $table->timestamp('booking_ends_at');
+            $table->integer('country_code')->default(91);
+            $table->bigInteger('phone');
+            $table->timestamp('booking_date');
+            $table->string('slot');
+            $table->json('members');
             $table->softDeletes();
             $table->timestamps();
         });
