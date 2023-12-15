@@ -10,30 +10,35 @@ use Carbon\Carbon;
 use DateTime;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Validation\ValidationException;
 
 class BookingResource extends Resource
 {
     protected static ?string $model = Booking::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-m-calendar-days';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Hidden::make('user_id')
+                    ->default(auth()->user()->id)
+                    ->required(),
                 Forms\Components\TextInput::make('phone')
                     ->prefix('+91')
                     ->tel()
@@ -66,7 +71,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('booking_date', null);
                     })
-                    ->hidden(fn (Get $get): bool => ! $get('branch_id'))
+                    ->hidden(fn (Get $get): bool => !$get('branch_id'))
                     ->searchable(),
                 DatePicker::make('booking_date')
                     ->native(false)
@@ -78,7 +83,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('slot', null);
                     })
-                    ->hidden(fn (Get $get): bool => ! $get('activity_id')),
+                    ->hidden(fn (Get $get): bool => !$get('activity_id')),
                 Radio::make('slot')
                     ->options(function (callable $get) {
                         $day = Carbon::parse($get('booking_date'))->dayName;
@@ -98,7 +103,7 @@ class BookingResource extends Resource
                                 $start_time = date('h:i A', strtotime($timing['data']['start_time']));
                                 $end_time = date('h:i A', strtotime($timing['data']['end_time']));
                                 if (isset($timing['data']['no_of_slots'])) {
-                                    $no_of_slots = $timing['data']['no_of_slots'].' slots left';
+                                    $no_of_slots = $timing['data']['no_of_slots'] . ' slots left';
                                     $total_slots = $timing['data']['no_of_slots'];
                                 }
                                 $booking_date = $get('booking_date');
@@ -107,7 +112,7 @@ class BookingResource extends Resource
                                     ->selectRaw('SUM(JSON_LENGTH(members)) as total_members_count')
                                     ->value('total_members_count');
                                 if ($booking_count) {
-                                    $slots = (intval($total_slots) - $booking_count).' slots left';
+                                    $slots = (intval($total_slots) - $booking_count) . ' slots left';
                                     if ($slots == '0 slots left') {
                                         // continue;
                                     }
@@ -118,7 +123,7 @@ class BookingResource extends Resource
                                     $exists = in_array($day, $days);
                                     if ($exists) {
                                         // $dayZone
-                                        array_push($array, $start_time.' - '.$end_time);
+                                        array_push($array, $start_time . ' - ' . $end_time);
                                     }
                                 }
                             }
@@ -138,7 +143,7 @@ class BookingResource extends Resource
                                 ->where('activity_id', $activity_id)
                                 ->first();
 
-                            if (! $booking_timing) {
+                            if (!$booking_timing) {
                                 return null;
                             }
 
@@ -150,7 +155,7 @@ class BookingResource extends Resource
                                     $start_time = date('h:i A', strtotime($timing['data']['start_time']));
                                     $end_time = date('h:i A', strtotime($timing['data']['end_time']));
                                     if (isset($timing['data']['no_of_slots'])) {
-                                        $no_of_slots = $timing['data']['no_of_slots'].' slots left';
+                                        $no_of_slots = $timing['data']['no_of_slots'] . ' slots left';
                                         $total_slots = $timing['data']['no_of_slots'];
                                     }
                                     $booking_date = $get('booking_date');
@@ -159,7 +164,7 @@ class BookingResource extends Resource
                                         ->selectRaw('SUM(JSON_LENGTH(members)) as total_members_count')
                                         ->value('total_members_count');
                                     if ($booking_count) {
-                                        $slots = intval($total_slots) - $booking_count.' slots left';
+                                        $slots = intval($total_slots) - $booking_count . ' slots left';
                                         if ($slots == '0 slots left') {
                                             // continue;
                                         }
@@ -170,7 +175,7 @@ class BookingResource extends Resource
 
                                     $combined_array["$start_time - $end_time"] = implode(', ', array_map(function ($gender) {
                                         return ucfirst($gender);
-                                    }, $genders)).' - '.$no_of_slots;
+                                    }, $genders)) . ' - ' . $no_of_slots;
                                 }
                             }
 
@@ -194,7 +199,7 @@ class BookingResource extends Resource
                                 $start_time = date('h:i A', strtotime($timing['data']['start_time']));
                                 $end_time = date('h:i A', strtotime($timing['data']['end_time']));
                                 if (isset($timing['data']['no_of_slots'])) {
-                                    $no_of_slots = $timing['data']['no_of_slots'].' slots left';
+                                    $no_of_slots = $timing['data']['no_of_slots'] . ' slots left';
                                     $total_slots = $timing['data']['no_of_slots'];
                                 }
                                 $booking_date = $get('booking_date');
@@ -203,21 +208,19 @@ class BookingResource extends Resource
                                     ->selectRaw('SUM(JSON_LENGTH(members)) as total_members_count')
                                     ->value('total_members_count');
                                 if ($booking_count) {
-                                    $slots = (intval($total_slots) - $booking_count).' slots left';
+                                    $slots = (intval($total_slots) - $booking_count) . ' slots left';
                                     if ($slots == '0 slots left') {
                                         return $value === "$start_time - $end_time";
                                     }
                                 }
-
                             }
-
                         }
                     })
                     ->reactive()
                     ->afterStateUpdated(function (callable $set) {
                         return $set('members', null);
                     })
-                    ->hidden(fn (Get $get): bool => ! ($get('branch_id') && $get('activity_id') && $get('booking_date')))
+                    ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date')))
                     ->required()
                     ->columnSpanFull()
                     ->columns(3),
@@ -404,7 +407,7 @@ class BookingResource extends Resource
                                     }
                                 }
                             )
-                            ->hidden(fn (Get $get): bool => ! ($get('gender')))
+                            ->hidden(fn (Get $get): bool => !($get('gender')))
                             ->required()
                             ->live(debounce: 500),
                         TextInput::make('amount')
@@ -451,10 +454,10 @@ class BookingResource extends Resource
                             )
                             ->numeric()
                             ->required()
-                            ->hidden(fn (Get $get): bool => ! ($get('age'))),
+                            ->hidden(fn (Get $get): bool => !($get('age'))),
 
                     ])
-                    ->hidden(fn (Get $get): bool => ! ($get('branch_id') && $get('activity_id') && $get('booking_date') && $get('slot')))
+                    ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date') && $get('slot')))
                     ->defaultItems(0)
                     ->minItems(1)
                     ->columnSpanFull()
@@ -469,14 +472,103 @@ class BookingResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('user.name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('branch.name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('activity.name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('country_code')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('phone')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('booking_date')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('slot')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
-            ])
+                Filter::make('booking_date')
+                    ->form([
+                        DatePicker::make('booking_from'),
+                        DatePicker::make('booking_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['booking_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('booking_date', '>=', $date),
+                            )
+                            ->when(
+                                $data['booking_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('booking_date', '<=', $date),
+                            );
+                    }),
+
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
+                Filter::make('updated_at')
+                    ->form([
+                        DatePicker::make('updated_from'),
+                        DatePicker::make('updated_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['updated_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['updated_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '<=', $date),
+                            );
+                    }),
+
+            ], layout: FiltersLayout::AboveContentCollapsible)
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
+                ])->icon('heroicon-m-ellipsis-horizontal')
+                    ->tooltip('Actions'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -510,13 +602,5 @@ class BookingResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
-    }
-
-    protected function onValidationError(ValidationException $exception): void
-    {
-        Notification::make()
-            ->title($exception->getMessage())
-            ->danger()
-            ->send();
     }
 }

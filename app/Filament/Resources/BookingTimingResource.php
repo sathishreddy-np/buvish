@@ -9,10 +9,14 @@ use App\Models\Branch;
 use Filament\Forms;
 use Filament\Forms\Components\Builder as ComponentsBuilder;
 use Filament\Forms\Components\Builder\Block;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -21,7 +25,7 @@ class BookingTimingResource extends Resource
 {
     protected static ?string $model = BookingTiming::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-s-clock';
 
     public static function form(Form $form): Form
     {
@@ -149,13 +153,11 @@ class BookingTimingResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('branch.name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('activity.name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('activity.name')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -164,13 +166,56 @@ class BookingTimingResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
-            ])
+                Filter::make('created_at')
+                ->form([
+                    DatePicker::make('created_from'),
+                    DatePicker::make('created_until'),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['created_from'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                        );
+                }),
+            Filter::make('updated_at')
+                ->form([
+                    DatePicker::make('updated_from'),
+                    DatePicker::make('updated_until'),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['updated_from'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '>=', $date),
+                        )
+                        ->when(
+                            $data['updated_until'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('updated_at', '<=', $date),
+                        );
+                }),
+
+        ], layout: FiltersLayout::AboveContentCollapsible)
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
+                ])->icon('heroicon-m-ellipsis-horizontal')
+                    ->tooltip('Actions'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -34,4 +34,9 @@ class Branch extends Model
     {
         return $this->hasMany(BookingTiming::class);
     }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
 }
