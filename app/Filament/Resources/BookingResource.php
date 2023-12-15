@@ -16,11 +16,13 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Validation\ValidationException;
 
 class BookingResource extends Resource
 {
@@ -35,12 +37,7 @@ class BookingResource extends Resource
                 Forms\Components\TextInput::make('phone')
                     ->prefix('+91')
                     ->tel()
-                    ->telRegex('/^[6789]\d{9}$/')
-                    ->reactive()
-                    ->afterStateUpdated(function (callable $set) {
-                        return $set('branch_id', null);
-                    }),
-
+                    ->telRegex('/^[6789]\d{9}$/'),
                 Forms\Components\Select::make('branch_id')
                     ->label('Branch')
                     ->options(Branch::where('company_id', auth()->user()->company_id)->pluck('name', 'id'))
@@ -49,7 +46,6 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('activity_id', null);
                     })
-                    ->hidden(fn (Get $get): bool => !$get('phone'))
                     ->searchable(),
                 Forms\Components\Select::make('activity_id')
                     ->label('Activity')
@@ -102,17 +98,17 @@ class BookingResource extends Resource
                                 $start_time = date('h:i A', strtotime($timing['data']['start_time']));
                                 $end_time = date('h:i A', strtotime($timing['data']['end_time']));
                                 if (isset($timing['data']['no_of_slots'])) {
-                                    $no_of_slots = $timing['data']['no_of_slots']." slots left";
+                                    $no_of_slots = $timing['data']['no_of_slots'] . " slots left";
                                     $total_slots = $timing['data']['no_of_slots'];
-
                                 }
                                 $booking_date = $get('booking_date');
-                                $booking_count = Booking::where('booking_date',$booking_date)
-                                ->where('slot',"$start_time - $end_time")
-                                ->selectRaw('SUM(JSON_LENGTH(members)) as total_members_count')
-                                ->value('total_members_count');                                if($booking_count){
-                                    $slots = (intval($total_slots) - $booking_count)." slots left";
-                                    if($slots == "0 slots left"){
+                                $booking_count = Booking::where('booking_date', $booking_date)
+                                    ->where('slot', "$start_time - $end_time")
+                                    ->selectRaw('SUM(JSON_LENGTH(members)) as total_members_count')
+                                    ->value('total_members_count');
+                                if ($booking_count) {
+                                    $slots = (intval($total_slots) - $booking_count) . " slots left";
+                                    if ($slots == "0 slots left") {
                                         continue;
                                     }
                                 }
@@ -132,60 +128,60 @@ class BookingResource extends Resource
                             return $combined_array;
                         }
                     })
-                    ->descriptions(function (callable $get)
-                    {
-                        $day = strtolower(Carbon::parse($get('booking_date'))->dayName);
-                        $branch_id = $get('branch_id');
-                        $activity_id = $get('activity_id');
+                    ->descriptions(
+                        function (callable $get) {
+                            $day = strtolower(Carbon::parse($get('booking_date'))->dayName);
+                            $branch_id = $get('branch_id');
+                            $activity_id = $get('activity_id');
 
-                        $booking_timing = BookingTiming::where('branch_id', $branch_id)
-                            ->where('activity_id', $activity_id)
-                            ->first();
+                            $booking_timing = BookingTiming::where('branch_id', $branch_id)
+                                ->where('activity_id', $activity_id)
+                                ->first();
 
-                        if (!$booking_timing) {
-                            return null;
-                        }
-
-                        $timings = $booking_timing->timings;
-                        $combined_array = [];
-
-                        foreach ($timings as $timing) {
-                            if ($timing['type'] == 'Opening Timings' && in_array($day, $timing['data']['day'])) {
-                                $start_time = date('h:i A', strtotime($timing['data']['start_time']));
-                                $end_time = date('h:i A', strtotime($timing['data']['end_time']));
-                                if (isset($timing['data']['no_of_slots'])) {
-                                    $no_of_slots = $timing['data']['no_of_slots']." slots left";
-                                    $total_slots = $timing['data']['no_of_slots'];
-                                }
-                                $booking_date = $get('booking_date');
-                                $booking_count = Booking::where('booking_date',$booking_date)
-                                ->where('slot',"$start_time - $end_time")
-                                ->selectRaw('SUM(JSON_LENGTH(members)) as total_members_count')
-                                ->value('total_members_count');
-                                if($booking_count){
-                                    $slots = intval($total_slots) - $booking_count." slots left";
-                                    if($slots == "0 slots left"){
-                                        continue;
-                                    }
-                                    $no_of_slots = $slots;
-                                }
-
-                                $genders = array_filter(array_column($timing['data']['allowed_genders'], 'gender'));
-
-
-
-                                $combined_array["$start_time - $end_time"] = implode(', ', array_map(function($gender) {
-                                    return ucfirst($gender);
-                                }, $genders)) . ' - ' . $no_of_slots;
+                            if (!$booking_timing) {
+                                return null;
                             }
-                        }
 
-                        return $combined_array;
-                    }
+                            $timings = $booking_timing->timings;
+                            $combined_array = [];
+
+                            foreach ($timings as $timing) {
+                                if ($timing['type'] == 'Opening Timings' && in_array($day, $timing['data']['day'])) {
+                                    $start_time = date('h:i A', strtotime($timing['data']['start_time']));
+                                    $end_time = date('h:i A', strtotime($timing['data']['end_time']));
+                                    if (isset($timing['data']['no_of_slots'])) {
+                                        $no_of_slots = $timing['data']['no_of_slots'] . " slots left";
+                                        $total_slots = $timing['data']['no_of_slots'];
+                                    }
+                                    $booking_date = $get('booking_date');
+                                    $booking_count = Booking::where('booking_date', $booking_date)
+                                        ->where('slot', "$start_time - $end_time")
+                                        ->selectRaw('SUM(JSON_LENGTH(members)) as total_members_count')
+                                        ->value('total_members_count');
+                                    if ($booking_count) {
+                                        $slots = intval($total_slots) - $booking_count . " slots left";
+                                        if ($slots == "0 slots left") {
+                                            continue;
+                                        }
+                                        $no_of_slots = $slots;
+                                    }
+
+                                    $genders = array_filter(array_column($timing['data']['allowed_genders'], 'gender'));
+
+
+
+                                    $combined_array["$start_time - $end_time"] = implode(', ', array_map(function ($gender) {
+                                        return ucfirst($gender);
+                                    }, $genders)) . ' - ' . $no_of_slots;
+                                }
+                            }
+
+                            return $combined_array;
+                        }
                     )
                     ->reactive()
                     ->afterStateUpdated(function (callable $set) {
-                        return $set('gender', null);
+                        return $set('members', null);
                     })
                     ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date')))
                     ->required()
@@ -480,5 +476,13 @@ class BookingResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+    protected function onValidationError(ValidationException $exception): void
+    {
+        Notification::make()
+            ->title($exception->getMessage())
+            ->danger()
+            ->send();
     }
 }
