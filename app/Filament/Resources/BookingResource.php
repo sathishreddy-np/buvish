@@ -371,7 +371,8 @@ class BookingResource extends Resource
                                 }
                             )
                             ->hidden(fn (Get $get): bool => !($get('gender')))
-                            ->required(),
+                            ->required()
+                            ->live(debounce:500),
                         TextInput::make('amount')
                             ->minValue(
                                 function (callable $get) {
