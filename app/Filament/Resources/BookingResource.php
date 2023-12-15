@@ -66,7 +66,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('booking_date', null);
                     })
-                    ->hidden(fn (Get $get): bool => !$get('branch_id'))
+                    ->hidden(fn (Get $get): bool => ! $get('branch_id'))
                     ->searchable(),
                 DatePicker::make('booking_date')
                     ->native(false)
@@ -78,7 +78,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('slot', null);
                     })
-                    ->hidden(fn (Get $get): bool => !$get('activity_id')),
+                    ->hidden(fn (Get $get): bool => ! $get('activity_id')),
                 Radio::make('slot')
                     ->options(function (callable $get) {
                         $day = Carbon::parse($get('booking_date'))->dayName;
@@ -98,7 +98,7 @@ class BookingResource extends Resource
                                 $start_time = date('h:i A', strtotime($timing['data']['start_time']));
                                 $end_time = date('h:i A', strtotime($timing['data']['end_time']));
                                 if (isset($timing['data']['no_of_slots'])) {
-                                    $no_of_slots = $timing['data']['no_of_slots'] . " slots left";
+                                    $no_of_slots = $timing['data']['no_of_slots'].' slots left';
                                     $total_slots = $timing['data']['no_of_slots'];
                                 }
                                 $booking_date = $get('booking_date');
@@ -107,8 +107,8 @@ class BookingResource extends Resource
                                     ->selectRaw('SUM(JSON_LENGTH(members)) as total_members_count')
                                     ->value('total_members_count');
                                 if ($booking_count) {
-                                    $slots = (intval($total_slots) - $booking_count) . " slots left";
-                                    if ($slots == "0 slots left") {
+                                    $slots = (intval($total_slots) - $booking_count).' slots left';
+                                    if ($slots == '0 slots left') {
                                         // continue;
                                     }
                                 }
@@ -118,7 +118,7 @@ class BookingResource extends Resource
                                     $exists = in_array($day, $days);
                                     if ($exists) {
                                         // $dayZone
-                                        array_push($array, $start_time . ' - ' . $end_time);
+                                        array_push($array, $start_time.' - '.$end_time);
                                     }
                                 }
                             }
@@ -138,7 +138,7 @@ class BookingResource extends Resource
                                 ->where('activity_id', $activity_id)
                                 ->first();
 
-                            if (!$booking_timing) {
+                            if (! $booking_timing) {
                                 return null;
                             }
 
@@ -150,7 +150,7 @@ class BookingResource extends Resource
                                     $start_time = date('h:i A', strtotime($timing['data']['start_time']));
                                     $end_time = date('h:i A', strtotime($timing['data']['end_time']));
                                     if (isset($timing['data']['no_of_slots'])) {
-                                        $no_of_slots = $timing['data']['no_of_slots'] . " slots left";
+                                        $no_of_slots = $timing['data']['no_of_slots'].' slots left';
                                         $total_slots = $timing['data']['no_of_slots'];
                                     }
                                     $booking_date = $get('booking_date');
@@ -159,8 +159,8 @@ class BookingResource extends Resource
                                         ->selectRaw('SUM(JSON_LENGTH(members)) as total_members_count')
                                         ->value('total_members_count');
                                     if ($booking_count) {
-                                        $slots = intval($total_slots) - $booking_count . " slots left";
-                                        if ($slots == "0 slots left") {
+                                        $slots = intval($total_slots) - $booking_count.' slots left';
+                                        if ($slots == '0 slots left') {
                                             // continue;
                                         }
                                         $no_of_slots = $slots;
@@ -168,18 +168,16 @@ class BookingResource extends Resource
 
                                     $genders = array_filter(array_column($timing['data']['allowed_genders'], 'gender'));
 
-
-
                                     $combined_array["$start_time - $end_time"] = implode(', ', array_map(function ($gender) {
                                         return ucfirst($gender);
-                                    }, $genders)) . ' - ' . $no_of_slots;
+                                    }, $genders)).' - '.$no_of_slots;
                                 }
                             }
 
                             return $combined_array;
                         }
                     )
-                    ->disableOptionWhen(function (callable $get,string $value) {
+                    ->disableOptionWhen(function (callable $get, string $value) {
                         $day = Carbon::parse($get('booking_date'))->dayName;
                         $day = strtolower($day);
                         $branch_id = $get('branch_id');
@@ -196,7 +194,7 @@ class BookingResource extends Resource
                                 $start_time = date('h:i A', strtotime($timing['data']['start_time']));
                                 $end_time = date('h:i A', strtotime($timing['data']['end_time']));
                                 if (isset($timing['data']['no_of_slots'])) {
-                                    $no_of_slots = $timing['data']['no_of_slots'] . " slots left";
+                                    $no_of_slots = $timing['data']['no_of_slots'].' slots left';
                                     $total_slots = $timing['data']['no_of_slots'];
                                 }
                                 $booking_date = $get('booking_date');
@@ -205,8 +203,8 @@ class BookingResource extends Resource
                                     ->selectRaw('SUM(JSON_LENGTH(members)) as total_members_count')
                                     ->value('total_members_count');
                                 if ($booking_count) {
-                                    $slots = (intval($total_slots) - $booking_count) . " slots left";
-                                    if ($slots == "0 slots left") {
+                                    $slots = (intval($total_slots) - $booking_count).' slots left';
+                                    if ($slots == '0 slots left') {
                                         return $value === "$start_time - $end_time";
                                     }
                                 }
@@ -219,7 +217,7 @@ class BookingResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         return $set('members', null);
                     })
-                    ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date')))
+                    ->hidden(fn (Get $get): bool => ! ($get('branch_id') && $get('activity_id') && $get('booking_date')))
                     ->required()
                     ->columnSpanFull()
                     ->columns(3),
@@ -406,9 +404,9 @@ class BookingResource extends Resource
                                     }
                                 }
                             )
-                            ->hidden(fn (Get $get): bool => !($get('gender')))
+                            ->hidden(fn (Get $get): bool => ! ($get('gender')))
                             ->required()
-                            ->live(debounce:500),
+                            ->live(debounce: 500),
                         TextInput::make('amount')
                             ->minValue(
                                 function (callable $get) {
@@ -453,17 +451,16 @@ class BookingResource extends Resource
                             )
                             ->numeric()
                             ->required()
-                            ->hidden(fn (Get $get): bool => !($get('age'))),
+                            ->hidden(fn (Get $get): bool => ! ($get('age'))),
 
                     ])
-                    ->hidden(fn (Get $get): bool => !($get('branch_id') && $get('activity_id') && $get('booking_date') && $get('slot')))
+                    ->hidden(fn (Get $get): bool => ! ($get('branch_id') && $get('activity_id') && $get('booking_date') && $get('slot')))
                     ->defaultItems(0)
                     ->minItems(1)
                     ->columnSpanFull()
                     ->columns(4)
                     ->collapsible()
                     ->cloneable(),
-
 
             ]);
     }
