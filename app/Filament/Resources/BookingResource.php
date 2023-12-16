@@ -452,6 +452,48 @@ class BookingResource extends Resource
                                     }
                                 }
                             )
+                            ->minValue(
+                                function (callable $get) {
+                                    $timeRange = $get('../../slot');
+                                    [$startTime, $endTime] = explode(' - ', $timeRange);
+                                    $startTimeObj = DateTime::createFromFormat('h:i A', $startTime);
+                                    $endTimeObj = DateTime::createFromFormat('h:i A', $endTime);
+                                    $startTime24 = $startTimeObj->format('H:i');
+                                    $endTime24 = $endTimeObj->format('H:i');
+
+                                    $day = Carbon::parse($get('booking_date'))->dayName;
+                                    $day = strtolower($day);
+                                    $branch_id = $get('../../branch_id');
+                                    $activity_id = $get('../../activity_id');
+                                    $booking_timing = BookingTiming::where('branch_id', $branch_id)
+                                        ->where('activity_id', $activity_id)
+                                        ->first();
+
+                                    if ($booking_timing) {
+                                        $timings = $booking_timing->timings;
+                                        foreach ($timings as $timing) {
+                                            if ($timing['type'] == 'Opening Timings') {
+                                                $start_time = $timing['data']['start_time'];
+                                                $end_time = $timing['data']['end_time'];
+
+                                                if ($start_time == $startTime24 && $end_time == $endTime24) {
+                                                    $genders = $timing['data']['allowed_genders'];
+                                                    foreach ($genders as $gender) {
+                                                        $gen = $gender['gender'];
+                                                        $input_gen = $get('gender');
+                                                        if ($gen == $input_gen) {
+                                                            $amount = $gender['amount'];
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        return $amount;
+                                    }
+                                }
+                            )
+                            ->readOnly()
                             ->numeric()
                             ->required()
                             ->hidden(fn (Get $get): bool => !($get('age'))),
