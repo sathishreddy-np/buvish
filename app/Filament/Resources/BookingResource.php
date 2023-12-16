@@ -524,6 +524,8 @@ class BookingResource extends Resource
                     })
 
                     ->hidden(fn (Get $get): bool => !($get('members')))
+                    ->columnSpanFull()
+                    ->searchable()
                     ->required(),
                 Actions::make([
                     Action::make('request_payment')
