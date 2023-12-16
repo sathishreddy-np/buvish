@@ -9,6 +9,8 @@ use App\Models\Branch;
 use Carbon\Carbon;
 use DateTime;
 use Filament\Forms;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
@@ -17,6 +19,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
@@ -227,7 +230,7 @@ class BookingResource extends Resource
 
                 Repeater::make('members')
                     ->schema([
-                        TextInput::make('Name'),
+                        TextInput::make('name'),
                         Select::make('gender')
                             ->options(
                                 function (callable $get) {
@@ -505,7 +508,50 @@ class BookingResource extends Resource
                     ->columnSpanFull()
                     ->columns(4)
                     ->collapsible()
+                    ->reactive()
+                    ->afterStateUpdated(function (callable $set) {
+                        return $set('mode_of_payment', null);
+                    })
                     ->cloneable(),
+                Select::make('mode_of_payment')
+                    ->options([
+                        "cash" => "Cash",
+                        "online" => "Online"
+                    ])
+                    ->reactive()
+                    ->afterStateUpdated(function (callable $set) {
+                        return $set('request_payment', null);
+                    })
+
+                    ->hidden(fn (Get $get): bool => !($get('members')))
+                    ->required(),
+                Actions::make([
+                    Action::make('request_payment')
+                        ->icon('heroicon-m-currency-rupee')
+                        ->color('success')
+                        ->action(function (callable $get) {
+                            $amount = 0;
+                            foreach ($get('members') as $member) {
+                                $amount += $member['amount'];
+                            }
+                            if ($amount != 0) {
+                                Notification::make()
+                                    ->title("Payment requested Rs. $amount successfully.")
+                                    ->success()
+                                    ->send();
+                            }
+
+                            if ($amount == 0) {
+                                Notification::make()
+                                    ->title("Add atleast 1 member.")
+                                    ->danger()
+                                    ->send();
+                            }
+                        })->hidden(fn (Get $get): bool => !($get('mode_of_payment') == "online"))
+
+                ])
+
+
 
             ]);
     }
